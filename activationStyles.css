@@ -1,0 +1,85 @@
+/* activationStyles.css
+ *
+ * Modern, accessible styles for the activation/on-boarding UI.
+ * Feel free to tweak the color variables below to match your brand.
+ */
+
+:root {
+  /* Design tokens */
+  --accent-hue: 218;           /* Set once, everything else derives from it */
+  --accent-sat: 84%;
+  --accent-light: 56%;
+
+  --accent-color: hsl(var(--accent-hue) var(--accent-sat) var(--accent-light));
+  --accent-color-hover: hsl(var(--accent-hue) var(--accent-sat) calc(var(--accent-light) - 6%));
+  --accent-color-active: hsl(var(--accent-hue) var(--accent-sat) calc(var(--accent-light) - 12%));
+
+  --text-on-accent: #ffffff;
+  --focus-ring: 0 0 0 3px hsl(var(--accent-hue) 90% 70% / 0.8);
+  --shadow-elevated: 0 4px 12px hsl(var(--accent-hue) 60% 30% / 0.25);
+  --transition-speed: 160ms;
+}
+
+/* Optional wrapper to center content on screen */
+.activate-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(
+      135deg,
+      hsl(var(--accent-hue) 30% 98%) 0%,
+      hsl(var(--accent-hue) 40% 94%) 100%
+  );
+}
+
+/* Primary action button */
+.activate-feature-btn {
+  cursor: pointer;
+  position: relative;
+  appearance: none;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.9rem 1.75rem;
+  font: 600 1rem/1.2 "Inter", system-ui, sans-serif;
+  color: var(--text-on-accent);
+  background-color: var(--accent-color);
+  box-shadow: var(--shadow-elevated);
+  transition:
+    background-color var(--transition-speed) ease,
+    box-shadow var(--transition-speed) ease,
+    transform var(--transition-speed) ease;
+}
+
+.activate-feature-btn:hover {
+  background-color: var(--accent-color-hover);
+  box-shadow: 0 6px 16px hsl(var(--accent-hue) 60% 30% / 0.3);
+  transform: translateY(-1px);
+}
+
+.activate-feature-btn:active {
+  background-color: var(--accent-color-active);
+  box-shadow: 0 3px 8px hsl(var(--accent-hue) 60% 30% / 0.35);
+  transform: translateY(0);
+}
+
+.activate-feature-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-elevated), var(--focus-ring);
+}
+
+/* Disabled state */
+.activate-feature-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* High-contrast mode tweak */
+@media (prefers-contrast: more) {
+  .activate-feature-btn {
+    border: 2px solid var(--text-on-accent);
+  }
+}
