@@ -71,8 +71,8 @@
         "https://*.zoom.us/*",
         "https://teams.microsoft.com/*"
       ],
-      "js": ["content/meetingOverlay.js"],
-      "css": ["styles/styles/meetingOverlay.css"],
+      "js": ["src/content/meetingOverlay.js"],
+      "css": ["src/styles/content/meetingOverlay.css"],
       "run_at": "document_end",
       "all_frames": false
     },
@@ -81,8 +81,8 @@
         "https://app.apollo.io/*",
         "https://*.apollo.io/*"
       ],
-      "js": ["content/apolloIntegration.js"],
-      "css": ["styles/styles/integrationCommon.css"],
+      "js": ["src/content/apolloIntegration.js"],
+      "css": ["src/styles/content/integrationCommon.css"],
       "run_at": "document_end",
       "all_frames": false
     },
@@ -91,8 +91,8 @@
         "https://app.salesloft.com/*",
         "https://*.salesloft.com/*"
       ],
-      "js": ["content/salesloftIntegration.js"],
-      "css": ["styles/styles/integrationCommon.css"],
+      "js": ["src/content/salesloftIntegration.js"],
+      "css": ["src/styles/content/integrationCommon.css"],
       "run_at": "document_end",
       "all_frames": false
     }

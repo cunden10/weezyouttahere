@@ -129,7 +129,7 @@ export default defineConfig(({ mode }) => {
     }, {})
   },
 
-  // Plugin configuration
+      // Plugin configuration
   plugins: [
     // Copy manifest.json to build directory
     {
