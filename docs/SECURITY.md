@@ -38,10 +38,29 @@ cp .env.example .env
 VITE_DEEPGRAM_API_KEY=your_actual_deepgram_api_key_here
 ```
 
-3. **Vite automatically injects at build time:**
+3. **Environment File Hierarchy (Vite):**
+```bash
+# Priority order (highest to lowest):
+.env.local          # Personal overrides (highest priority)
+.env.production     # Production-specific settings
+.env.development    # Development-specific settings  
+.env                # Default settings
+.env.example        # Template (not loaded)
+```
+
+4. **Environment-specific builds:**
+```bash
+npm run dev         # Uses .env.development
+npm run build       # Uses .env.production
+npm run build:chrome # Production build with optimization
+```
+
+5. **Vite validates and injects at build time:**
 ```bash
 npm run build:chrome
-# API key is replaced in the final bundle
+# ✅ Validates required environment variables
+# ✅ API key is replaced in the final bundle
+# ❌ Build fails if VITE_DEEPGRAM_API_KEY is missing
 ```
 
 ### **Security Benefits**

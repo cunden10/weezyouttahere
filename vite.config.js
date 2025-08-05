@@ -1,7 +1,30 @@
-import { defineConfig } from 'vite';
+/* ================================================================
+ * VITE CONFIGURATION FOR SECURE ENVIRONMENT HANDLING
+ * ================================================================ */
+
+import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'path';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  // Load environment variables based on current mode
+  const env = loadEnv(mode, process.cwd(), 'VITE_');
+  
+  // Validate required environment variables at build time
+  const requiredEnvVars = ['VITE_DEEPGRAM_API_KEY'];
+  const missingVars = requiredEnvVars.filter(key => !env[key]);
+  
+  if (missingVars.length > 0) {
+    throw new Error(
+      `Missing required environment variables: ${missingVars.join(', ')}\n` +
+      'Please check your .env file and ensure all required keys are set.'
+    );
+  }
+
+  // Log environment validation (without exposing keys)
+  console.log(`🔧 Building in ${mode} mode`);
+  console.log(`✅ Environment variables validated: ${requiredEnvVars.length} required vars present`);
+
+  return {
   // Build configuration for browser extension
   build: {
     // Generate multiple entry points for different extension components
@@ -58,11 +81,11 @@ export default defineConfig({
     // Output directory
     outDir: 'build/chrome',
     
-    // Generate source maps for debugging
-    sourcemap: process.env.NODE_ENV === 'development',
+    // Generate source maps for debugging (secure: no source maps in production)
+    sourcemap: mode === 'development',
     
     // Minification settings
-    minify: process.env.NODE_ENV === 'production',
+    minify: mode === 'production',
     
     // Copy static assets
     copyPublicDir: true,
@@ -73,9 +96,12 @@ export default defineConfig({
 
   // Development server configuration
   server: {
-    port: process.env.VITE_DEV_SERVER_PORT || 3000,
+    port: env.VITE_DEV_SERVER_PORT || 3000,
+    host: env.VITE_DEV_SERVER_HOST || 'localhost',
     open: false, // Don't auto-open browser for extension development
     cors: true,
+    // HTTPS for development (recommended for microphone access)
+    https: mode === 'development' && env.VITE_ENABLE_HTTPS === 'true',
     hmr: {
       // Enable hot module replacement for extension development
       port: 24678
@@ -87,7 +113,12 @@ export default defineConfig({
     // Make build-time constants available
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-    __DEV__: process.env.NODE_ENV === 'development'
+    __DEV__: mode === 'development',
+    // Optionally create process.env compatibility for legacy code
+    'process.env': Object.keys(env).reduce((prev, key) => {
+      prev[key] = JSON.stringify(env[key]);
+      return prev;
+    }, {})
   },
 
   // Plugin configuration
@@ -126,5 +157,18 @@ export default defineConfig({
   // Browser extension specific settings
   experimental: {
     // Enable experimental features as needed
+  },
+
+  // Security enhancements
+  build: {
+    ...this.build,
+    // Ensure sensitive data doesn't leak in source maps
+    sourcemap: mode === 'development',
+    // Additional security for production builds
+    rollupOptions: {
+      ...this.build?.rollupOptions,
+      external: mode === 'production' ? ['eval'] : []
+    }
   }
+  };
 });

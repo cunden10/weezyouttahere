@@ -1,21 +1,24 @@
-/* featureActivation.js
- *
+/* ================================================================
+ * featureActivation.js
+ * ================================================================
  * Manages the permission + activation flow for the real-time
  * Deepgram transcription feature in a browser extension or web page.
  *
- * All logic, naming, and UI strings are original and vendor-agnostic.
+ * Secure API key injection eliminates the need for user-provided keys.
  *
  * Example:
  *   document.querySelector('.activate-feature-btn').onclick = () => {
  *     enableTranscriptionFeature({
- *       deepgramKey : 'YOUR_DEEPGRAM_API_KEY',
- *       onSuccess   : () => showActivationStatus('Transcription enabled!'),
- *       onError     : (msg) => showActivationStatus(msg, 'error')
+ *       onSuccess: () => showActivationStatus('Transcription enabled!'),
+ *       onError: (msg) => showActivationStatus(msg, 'error')
  *     });
  *   };
- */
+ * ================================================================ */
 
 import createLiveTranscriber from './transcriptionBootstrap.js';
+
+// API key automatically injected, no user input required
+const DEEPGRAM_API_KEY = import.meta.env.VITE_DEEPGRAM_API_KEY;
 
 /* -------------------------------------------------- */
 /* 🔧 Configuration & module-level state              */
@@ -55,16 +58,19 @@ export async function requestMicrophoneAccess() {
 /* -------------------------------------------------- */
 
 export async function enableTranscriptionFeature({
-  deepgramKey,
   onTranscript = () => {},
   onSuccess    = () => {},
-  onError      = () => {}
+  onError      = () => {},
+  ...options
 } = {}) {
   if (isStarting) return;
   isStarting = true;
 
   try {
-    if (!deepgramKey) throw new Error('Missing Deepgram API key.');
+    // Validate environment setup
+    if (!DEEPGRAM_API_KEY) {
+      throw new Error('Transcription service not properly configured. Please contact support.');
+    }
 
     // Skip if already enabled via storage
     if (isFeatureActive()) {
@@ -75,20 +81,25 @@ export async function enableTranscriptionFeature({
     const allowed = await requestMicrophoneAccess();
     if (!allowed) throw new Error('Microphone access was denied.');
 
-    // Create + start the pipeline
+    // Create + start the pipeline with managed API key (user never sees this)
     transcriber = createLiveTranscriber({
-      deepgramKey,
-      language             : 'en-US',
-      enableInterimResults : !isLite,
-      onTranscript
+      deepgramKey: DEEPGRAM_API_KEY,  // Injected securely
+      language: 'en-US',
+      enableInterimResults: !isLite,
+      onTranscript,
+      ...options
     });
 
     await transcriber.start();
     persistFeatureState(true);
     onSuccess();
   } catch (err) {
-    console.error('[featureActivation] Activation failed:', err);
-    onError(err.message);
+    console.error('[featureActivation] Activation failed:', err.message);
+    // Provide user-friendly error messages
+    const userMessage = err.message.includes('not properly configured') 
+      ? 'Transcription service unavailable. Please try again later.'
+      : err.message;
+    onError(userMessage);
   } finally {
     isStarting = false;
   }
@@ -167,13 +178,12 @@ document.addEventListener('DOMContentLoaded', () => {
     showActivationStatus('');
 
     await enableTranscriptionFeature({
-      deepgramKey : btn.dataset.deepgramKey,
       onTranscript: (text) => console.debug('[live]', text),
-      onSuccess   : () => {
+      onSuccess: () => {
         setBtnState(true);
         showActivationStatus('Transcription enabled!');
       },
-      onError     : (msg) => {
+      onError: (msg) => {
         setBtnState(false);
         showActivationStatus(msg, 'error');
       }

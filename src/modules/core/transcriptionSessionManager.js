@@ -1,5 +1,6 @@
-/* transcriptionSessionManager.js
- *
+/* ================================================================
+ * transcriptionSessionManager.js
+ * ================================================================
  * Centralized session orchestrator for browser-based Deepgram transcription.
  * Manages lifecycle, state, and observer notifications in an extensible,
  * event-driven architecture.
@@ -9,12 +10,15 @@
  * - Observer pattern for loose coupling
  * - Extensible plugin architecture
  * - Clean separation of concerns
- * - Zero dependencies on legacy vendor code
- */
+ * - Secure API key injection at build time
+ * ================================================================ */
 
-import createLiveTranscriber from './transcriptionBootstrap.js';
+import createLiveTranscriber from '../activation/transcriptionBootstrap.js';
 import { MiniEmitter, safeStorageGet, safeStorageSet, delay } from './coreUtils.js';
-import { playSound } from './soundManager.js';
+import { playNotificationSound } from '../audio/audioNotificationController.js';
+
+// API key injected at build time
+const DEEPGRAM_API_KEY = import.meta.env.VITE_DEEPGRAM_API_KEY;
 
 /* ------------------------------------------------------------------ */
 /* 📊 Session State & Event Types                                     */
@@ -104,12 +108,18 @@ export default class TranscriptionSessionManager extends MiniEmitter {
       throw new Error(`Cannot start session from state: ${this.#state}`);
     }
 
+    // Validate API key availability
+    if (!DEEPGRAM_API_KEY) {
+      throw new Error('Deepgram API key not configured. Please check environment setup.');
+    }
+
     this.#setState(SESSION_STATES.INITIALIZING);
     this.#sessionId = this.#generateSessionId();
     
     try {
-      // Create transcriber instance
+      // Create transcriber instance with injected API key
       this.#transcriber = createLiveTranscriber({
+        deepgramKey: DEEPGRAM_API_KEY,  // Use injected key
         ...sessionConfig,
         onTranscript: (text, meta) => this.#handleInterimTranscript(text, meta),
         onFinalTranscript: (text, meta) => this.#handleFinalTranscript(text, meta),
@@ -130,7 +140,7 @@ export default class TranscriptionSessionManager extends MiniEmitter {
       this.#setState(SESSION_STATES.ACTIVE);
       
       if (this.#config.enableSounds) {
-        playSound('activated');
+        playNotificationSound('activated');
       }
 
       // Persist session state
