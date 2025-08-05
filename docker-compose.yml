@@ -1,0 +1,239 @@
+# ================================================================
+# DOCKER COMPOSE - LIVE TRANSCRIPTION EXTENSION
+# ================================================================
+# Multi-environment Docker composition for development, testing, and CI/CD
+
+version: '3.8'
+
+# ================================================================
+# COMMON CONFIGURATION
+# ================================================================
+x-common-build: &common-build
+  context: .
+  dockerfile: Dockerfile
+  args:
+    BUILD_DATE: ${BUILD_DATE:-}
+    BUILD_VERSION: ${BUILD_VERSION:-1.0.0}
+    BUILD_COMMIT: ${BUILD_COMMIT:-local}
+
+x-common-environment: &common-env
+  NODE_ENV: ${NODE_ENV:-development}
+  VITE_APP_ENV: ${VITE_APP_ENV:-development}
+  VITE_EXTENSION_VERSION: ${VITE_EXTENSION_VERSION:-1.0.0-dev}
+  VITE_BUILD_TIME: ${VITE_BUILD_TIME:-}
+  VITE_BUILD_COMMIT: ${VITE_BUILD_COMMIT:-}
+
+services:
+  # ================================================================
+  # DEVELOPMENT BUILD
+  # ================================================================
+  dev-chrome:
+    <<: *common-build
+    build:
+      <<: *common-build
+      target: builder
+      args:
+        <<: *common-build
+        BUILD_ENV: development
+        BROWSER: chrome
+        VITE_DEEPGRAM_API_KEY: ${VITE_DEEPGRAM_API_KEY_DEV}
+        VITE_ENABLE_ANALYTICS: "false"
+    environment:
+      <<: *common-env
+      VITE_APP_ENV: development
+    volumes:
+      - ./build/chrome:/app/build/chrome:rw
+      - ./dist:/app/dist:rw
+    container_name: live-transcription-dev-chrome
+
+  dev-firefox:
+    <<: *common-build
+    build:
+      <<: *common-build
+      target: builder
+      args:
+        <<: *common-build
+        BUILD_ENV: development
+        BROWSER: firefox
+        VITE_DEEPGRAM_API_KEY: ${VITE_DEEPGRAM_API_KEY_DEV}
+        VITE_ENABLE_ANALYTICS: "false"
+    environment:
+      <<: *common-env
+      VITE_APP_ENV: development
+    volumes:
+      - ./build/firefox:/app/build/firefox:rw
+      - ./dist:/app/dist:rw
+    container_name: live-transcription-dev-firefox
+
+  # ================================================================
+  # STAGING BUILD
+  # ================================================================
+  staging-chrome:
+    <<: *common-build
+    build:
+      <<: *common-build
+      target: production
+      args:
+        <<: *common-build
+        BUILD_ENV: staging
+        BROWSER: chrome
+        VITE_DEEPGRAM_API_KEY: ${VITE_DEEPGRAM_API_KEY_STAGING}
+        VITE_ENABLE_ANALYTICS: "true"
+    environment:
+      <<: *common-env
+      VITE_APP_ENV: staging
+      NODE_ENV: production
+    volumes:
+      - ./build/chrome:/app/build/chrome:ro
+      - ./dist:/app/dist:ro
+    container_name: live-transcription-staging-chrome
+
+  staging-firefox:
+    <<: *common-build
+    build:
+      <<: *common-build
+      target: production
+      args:
+        <<: *common-build
+        BUILD_ENV: staging
+        BROWSER: firefox
+        VITE_DEEPGRAM_API_KEY: ${VITE_DEEPGRAM_API_KEY_STAGING}
+        VITE_ENABLE_ANALYTICS: "true"
+    environment:
+      <<: *common-env
+      VITE_APP_ENV: staging
+      NODE_ENV: production
+    volumes:
+      - ./build/firefox:/app/build/firefox:ro
+      - ./dist:/app/dist:ro
+    container_name: live-transcription-staging-firefox
+
+  # ================================================================
+  # PRODUCTION BUILD
+  # ================================================================
+  prod-chrome:
+    <<: *common-build
+    build:
+      <<: *common-build
+      target: final
+      args:
+        <<: *common-build
+        BUILD_ENV: production
+        BROWSER: chrome
+        VITE_DEEPGRAM_API_KEY: ${VITE_DEEPGRAM_API_KEY_PROD}
+        VITE_ENABLE_ANALYTICS: "true"
+    environment:
+      <<: *common-env
+      VITE_APP_ENV: production
+      NODE_ENV: production
+    volumes:
+      - extension-chrome-prod:/app/build/chrome:ro
+      - extension-dist-prod:/app/dist:ro
+    container_name: live-transcription-prod-chrome
+    restart: unless-stopped
+
+  prod-firefox:
+    <<: *common-build
+    build:
+      <<: *common-build
+      target: final
+      args:
+        <<: *common-build
+        BUILD_ENV: production
+        BROWSER: firefox
+        VITE_DEEPGRAM_API_KEY: ${VITE_DEEPGRAM_API_KEY_PROD}
+        VITE_ENABLE_ANALYTICS: "true"
+    environment:
+      <<: *common-env
+      VITE_APP_ENV: production
+      NODE_ENV: production
+    volumes:
+      - extension-firefox-prod:/app/build/firefox:ro
+      - extension-dist-prod:/app/dist:ro
+    container_name: live-transcription-prod-firefox
+    restart: unless-stopped
+
+  # ================================================================
+  # TESTING ENVIRONMENT
+  # ================================================================
+  test-runner:
+    <<: *common-build
+    build:
+      <<: *common-build
+      target: testing
+      args:
+        <<: *common-build
+        BUILD_ENV: test
+        BROWSER: chrome
+        VITE_DEEPGRAM_API_KEY: ${VITE_DEEPGRAM_API_KEY_TEST}
+        VITE_ENABLE_ANALYTICS: "false"
+    environment:
+      <<: *common-env
+      VITE_APP_ENV: test
+      CI: "true"
+    volumes:
+      - ./test-results:/app/test-results:rw
+      - ./coverage:/app/coverage:rw
+    container_name: live-transcription-test
+    command: ["npm", "run", "test:ci"]
+
+  # ================================================================
+  # SECURITY SCANNER
+  # ================================================================
+  security-scan:
+    image: alpine:3.18
+    depends_on:
+      - prod-chrome
+      - prod-firefox
+    volumes:
+      - extension-chrome-prod:/scan/chrome:ro
+      - extension-firefox-prod:/scan/firefox:ro
+      - ./security-reports:/reports:rw
+    container_name: live-transcription-security
+    command: |
+      sh -c "
+        echo '🔍 Starting security scan...'
+        
+        # Check for exposed secrets
+        echo 'Scanning for exposed secrets...'
+        if find /scan -type f -name '*.js' -exec grep -l 'DEEPGRAM_API_KEY\|sk-\|pk_' {} \; | head -1; then
+          echo '❌ SECURITY VIOLATION: API keys found in build!'
+          exit 1
+        fi
+        
+        # Check file permissions
+        echo 'Checking file permissions...'
+        find /scan -type f -perm +066 -exec echo 'Warning: World-writable file {}' \;
+        
+        # Generate security report
+        echo 'Generating security report...'
+        cat > /reports/security-report.txt << EOF
+Security Scan Report
+===================
+Date: $(date)
+Chrome Build: $(ls -la /scan/chrome/ | wc -l) files
+Firefox Build: $(ls -la /scan/firefox/ | wc -l) files
+Status: ✅ PASSED
+EOF
+        
+        echo '✅ Security scan completed successfully'
+      "
+
+# ================================================================
+# VOLUMES
+# ================================================================
+volumes:
+  extension-chrome-prod:
+    driver: local
+  extension-firefox-prod:
+    driver: local
+  extension-dist-prod:
+    driver: local
+
+# ================================================================
+# NETWORKS
+# ================================================================
+networks:
+  default:
+    name: live-transcription-network
+    driver: bridge

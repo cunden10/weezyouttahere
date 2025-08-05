@@ -37,6 +37,17 @@ if (import.meta.env.DEV) {
   console.log('Deepgram API key loaded:', DEEPGRAM_API_KEY ? '✅ Present' : '❌ Missing');
 }
 
+// Initialize security monitor for API key validation and usage monitoring
+import { createSecurityMonitor, validateApiKey } from './securityMonitor.js';
+
+// Validate API key format and security
+if (!validateApiKey(DEEPGRAM_API_KEY)) {
+  throw new Error(
+    'Invalid Deepgram API key format detected. ' +
+    'Please verify your API key configuration.'
+  );
+}
+
 // ===== CONSTANTS & CONFIGURATION =====
 
 const DEEPGRAM_CONFIG = Object.freeze({
