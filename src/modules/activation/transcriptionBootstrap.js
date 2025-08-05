@@ -12,7 +12,7 @@
  */
 
 // Import core transcription modules
-import { DeepgramLiveTranscriber, TRANSCRIPTION_EVENTS, AUDIO_SOURCE_TYPES } from './deepgramLiveTranscriber.js';
+import { DeepgramLiveTranscriber, TRANSCRIPTION_EVENTS, AUDIO_SOURCE_TYPES } from '../core/deepgramLiveTranscriber.js';
 
 // ===== CONSTANTS =====
 

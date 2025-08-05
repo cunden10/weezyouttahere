@@ -12,9 +12,9 @@
  *   – All elements receive the base class  .tx-toast  or .tx-banner
  *   – Variant classes are appended:        .is-success / .is-error ...
  *   – Override in CSS to match your brand:
- *        .tx-toast            { /* baseline */ }
- *        .tx-toast.is-error   { /* red bg  */ }
- *        .tx-banner.is-info   { /* blue bg */ }
+ *        .tx-toast            - baseline styles
+ *        .tx-toast.is-error   - red background
+ *        .tx-banner.is-info   - blue background
  *
  * @author   Your-Team
  * @version  1.0.0

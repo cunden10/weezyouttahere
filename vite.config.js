@@ -160,15 +160,6 @@ export default defineConfig(({ mode }) => {
   },
 
   // Security enhancements
-  build: {
-    ...this.build,
-    // Ensure sensitive data doesn't leak in source maps
-    sourcemap: mode === 'development',
-    // Additional security for production builds
-    rollupOptions: {
-      ...this.build?.rollupOptions,
-      external: mode === 'production' ? ['eval'] : []
-    }
-  }
+  // Additional security settings are handled in the main build configuration above
   };
 });

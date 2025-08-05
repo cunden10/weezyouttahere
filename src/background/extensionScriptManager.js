@@ -12,7 +12,7 @@
  * All naming is original and extension-specific.
  */
 
-import { safeStorageGet, safeStorageSet, delay } from './coreUtils.js';
+import { safeStorageGet, safeStorageSet, delay } from '../modules/core/coreUtils.js';
 
 /* ------------------------------------------------------------------ */
 /* 📋 Script Configuration & Registry                                 */

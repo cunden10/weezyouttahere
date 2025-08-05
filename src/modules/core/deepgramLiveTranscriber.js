@@ -831,35 +831,17 @@ class DeepgramLiveTranscriber extends EventEmitter {
 
 // ===== EXPORT MODULE =====
 
-// Support multiple module systems
-if (typeof module !== 'undefined' && module.exports) {
-    // CommonJS
-    module.exports = {
-        DeepgramLiveTranscriber,
-        TRANSCRIPTION_EVENTS,
-        SESSION_STATUS,
-        AUDIO_SOURCE_TYPES,
-        CONNECTION_STATUS
-    };
-} else if (typeof define === 'function' && define.amd) {
-    // AMD
-    define([], function() {
-        return {
-            DeepgramLiveTranscriber,
-            TRANSCRIPTION_EVENTS,
-            SESSION_STATUS,
-            AUDIO_SOURCE_TYPES,
-            CONNECTION_STATUS
-        };
-    });
-} else {
-    // Browser globals
-    window.DeepgramLiveTranscriber = DeepgramLiveTranscriber;
-    window.TRANSCRIPTION_EVENTS = TRANSCRIPTION_EVENTS;
-    window.SESSION_STATUS = SESSION_STATUS;
-    window.AUDIO_SOURCE_TYPES = AUDIO_SOURCE_TYPES;
-    window.CONNECTION_STATUS = CONNECTION_STATUS;
-}
+// ES6 Module exports
+export {
+    DeepgramLiveTranscriber,
+    TRANSCRIPTION_EVENTS,
+    SESSION_STATUS,
+    AUDIO_SOURCE_TYPES,
+    CONNECTION_STATUS
+};
+
+// Default export
+export default DeepgramLiveTranscriber;
 
 /**
  * Usage Example:
