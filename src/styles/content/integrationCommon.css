@@ -1,0 +1,453 @@
+/**
+ * integrationCommon.css
+ * 
+ * Common styles for sales platform integrations (Apollo.io, SalesLoft)
+ * Provides consistent UI styling for transcription controls injected into
+ * third-party sales platforms.
+ * 
+ * Features:
+ * - Platform-agnostic transcription controls
+ * - Consistent visual design across platforms
+ * - Responsive and accessible design
+ * - High contrast and reduced motion support
+ * - Modal dialogs for save functionality
+ */
+
+/* ================================================================== */
+/* Base Integration Styles */
+/* ================================================================== */
+
+.transcription-controls {
+  --integration-primary: #2563eb;
+  --integration-primary-hover: #1d4ed8;
+  --integration-danger: #dc2626;
+  --integration-danger-hover: #b91c1c;
+  --integration-success: #059669;
+  --integration-success-hover: #047857;
+  --integration-warning: #d97706;
+  --integration-warning-hover: #b45309;
+  
+  --integration-bg: #ffffff;
+  --integration-bg-secondary: #f8fafc;
+  --integration-border: #e2e8f0;
+  --integration-text: #334155;
+  --integration-text-secondary: #64748b;
+  
+  --integration-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --integration-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  
+  --integration-radius: 6px;
+  --integration-radius-lg: 8px;
+  
+  --integration-font-size: 14px;
+  --integration-font-weight: 500;
+  
+  /* Z-index high enough to appear above most platform UIs */
+  z-index: 9999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--integration-font-size);
+  line-height: 1.5;
+}
+
+/* ================================================================== */
+/* Transcription Panel */
+/* ================================================================== */
+
+.transcription-panel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--integration-bg);
+  border: 1px solid var(--integration-border);
+  border-radius: var(--integration-radius);
+  box-shadow: var(--integration-shadow);
+  margin: 8px;
+}
+
+/* ================================================================== */
+/* Transcription Button */
+/* ================================================================== */
+
+.transcribe-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--integration-primary);
+  color: white;
+  border: none;
+  border-radius: var(--integration-radius);
+  font-size: var(--integration-font-size);
+  font-weight: var(--integration-font-weight);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  font-family: inherit;
+}
+
+.transcribe-btn:hover {
+  background: var(--integration-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--integration-shadow-lg);
+}
+
+.transcribe-btn:focus {
+  outline: 2px solid var(--integration-primary);
+  outline-offset: 2px;
+}
+
+.transcribe-btn:active {
+  transform: translateY(0);
+}
+
+.transcribe-btn.active {
+  background: var(--integration-danger);
+}
+
+.transcribe-btn.active:hover {
+  background: var(--integration-danger-hover);
+}
+
+.transcribe-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.transcribe-btn .btn-text {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* ================================================================== */
+/* Status Indicator */
+/* ================================================================== */
+
+.transcription-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: var(--integration-bg-secondary);
+  border: 1px solid var(--integration-border);
+  border-radius: var(--integration-radius);
+  font-size: 13px;
+  color: var(--integration-text-secondary);
+}
+
+.status-text {
+  font-weight: var(--integration-font-weight);
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--integration-text-secondary);
+  transition: all 0.3s ease;
+}
+
+.transcription-status.recording .status-indicator {
+  background: var(--integration-success);
+  animation: pulse 2s infinite;
+}
+
+.transcription-status.error .status-indicator {
+  background: var(--integration-danger);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ================================================================== */
+/* Platform-Specific Adjustments */
+/* ================================================================== */
+
+/* Apollo.io Integration */
+.apollo-integration .transcription-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+}
+
+/* SalesLoft Integration */
+.salesloft-integration .transcription-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+}
+
+/* ================================================================== */
+/* Save Modal Styles */
+/* ================================================================== */
+
+.apollo-save-modal,
+.salesloft-save-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-content {
+  background: var(--integration-bg);
+  border-radius: var(--integration-radius-lg);
+  box-shadow: var(--integration-shadow-lg);
+  max-width: 500px;
+  width: 100%;
+  padding: 24px;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-content h3 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--integration-text);
+}
+
+.modal-content p {
+  margin: 0 0 16px 0;
+  color: var(--integration-text-secondary);
+  line-height: 1.6;
+}
+
+.transcript-preview {
+  background: var(--integration-bg-secondary);
+  border: 1px solid var(--integration-border);
+  border-radius: var(--integration-radius);
+  padding: 12px;
+  margin: 16px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--integration-text);
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.btn-save {
+  background: var(--integration-success);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--integration-radius);
+  font-size: var(--integration-font-size);
+  font-weight: var(--integration-font-weight);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-save:hover {
+  background: var(--integration-success-hover);
+}
+
+.btn-cancel {
+  background: transparent;
+  color: var(--integration-text-secondary);
+  border: 1px solid var(--integration-border);
+  padding: 10px 20px;
+  border-radius: var(--integration-radius);
+  font-size: var(--integration-font-size);
+  font-weight: var(--integration-font-weight);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-cancel:hover {
+  background: var(--integration-bg-secondary);
+  color: var(--integration-text);
+}
+
+/* ================================================================== */
+/* Notification Styles */
+/* ================================================================== */
+
+.apollo-notification,
+.salesloft-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 16px;
+  border-radius: var(--integration-radius);
+  color: white;
+  font-size: var(--integration-font-size);
+  font-weight: var(--integration-font-weight);
+  box-shadow: var(--integration-shadow-lg);
+  z-index: 10001;
+  animation: notificationSlideIn 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+@keyframes notificationSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.apollo-notification.success,
+.salesloft-notification.success {
+  background: var(--integration-success);
+}
+
+.apollo-notification.error,
+.salesloft-notification.error {
+  background: var(--integration-danger);
+}
+
+.apollo-notification.info,
+.salesloft-notification.info {
+  background: var(--integration-primary);
+}
+
+.apollo-notification.warning,
+.salesloft-notification.warning {
+  background: var(--integration-warning);
+}
+
+/* ================================================================== */
+/* Responsive Design */
+/* ================================================================== */
+
+@media (max-width: 768px) {
+  .transcription-panel {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+  }
+  
+  .transcribe-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    margin: 10px;
+    padding: 20px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .btn-save,
+  .btn-cancel {
+    width: 100%;
+  }
+}
+
+/* ================================================================== */
+/* Accessibility & Preferences */
+/* ================================================================== */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .transcription-controls {
+    --integration-border: #000000;
+    --integration-text: #000000;
+  }
+  
+  .transcribe-btn {
+    border: 2px solid rgba(255, 255, 255, 0.8);
+  }
+  
+  .transcription-status {
+    border: 2px solid var(--integration-border);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .transcribe-btn,
+  .status-indicator,
+  .modal-content,
+  .apollo-notification,
+  .salesloft-notification {
+    animation: none;
+    transition: none;
+  }
+  
+  .transcribe-btn:hover {
+    transform: none;
+  }
+}
+
+/* Dark mode support (when platform supports it) */
+@media (prefers-color-scheme: dark) {
+  .transcription-controls {
+    --integration-bg: #1e293b;
+    --integration-bg-secondary: #334155;
+    --integration-border: #475569;
+    --integration-text: #f1f5f9;
+    --integration-text-secondary: #cbd5e1;
+  }
+}
+
+/* ================================================================== */
+/* Focus Management */
+/* ================================================================== */
+
+.transcription-controls *:focus {
+  outline: 2px solid var(--integration-primary);
+  outline-offset: 2px;
+}
+
+.transcription-controls *:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ================================================================== */
+/* Print Styles */
+/* ================================================================== */
+
+@media print {
+  .transcription-controls,
+  .apollo-save-modal,
+  .salesloft-save-modal,
+  .apollo-notification,
+  .salesloft-notification {
+    display: none !important;
+  }
+}
