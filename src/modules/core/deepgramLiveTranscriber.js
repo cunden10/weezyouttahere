@@ -40,6 +40,26 @@ if (import.meta.env.DEV) {
 // Initialize security monitor for API key validation and usage monitoring
 import { createSecurityMonitor, validateApiKey } from './securityMonitor.js';
 
+/**
+ * ✅ SECURITY: Validate that WebSocket URL uses secure protocol
+ * @param {string} url - WebSocket URL to validate
+ * @throws {Error} If URL uses insecure protocol
+ */
+function validateSecureWebSocketUrl(url) {
+    if (!url.startsWith('wss://')) {
+        throw new Error(
+            '🚨 SECURITY ERROR: Insecure WebSocket protocol detected. ' +
+            'Chrome extensions require secure WebSocket connections (wss://) ' +
+            'when running on HTTPS pages. Insecure ws:// connections are blocked.'
+        );
+    }
+    
+    // Additional security checks
+    if (url.includes('localhost') || url.includes('127.0.0.1')) {
+        console.warn('⚠️ DEVELOPMENT WARNING: Using localhost WebSocket connection');
+    }
+}
+
 // Validate API key format and security
 if (!validateApiKey(DEEPGRAM_API_KEY)) {
   throw new Error(
@@ -50,8 +70,9 @@ if (!validateApiKey(DEEPGRAM_API_KEY)) {
 
 // ===== CONSTANTS & CONFIGURATION =====
 
+// ✅ SECURE CONFIGURATION - All connections use HTTPS/WSS only
 const DEEPGRAM_CONFIG = Object.freeze({
-    WSS_ENDPOINT: 'wss://api.deepgram.com/v1/listen',
+    WSS_ENDPOINT: 'wss://api.deepgram.com/v1/listen',  // ✅ Secure WebSocket (wss://)
     SAMPLE_RATE: 16000,
     CHANNELS: 1,
     ENCODING: 'linear16',
@@ -520,11 +541,12 @@ class DeepgramLiveTranscriber extends EventEmitter {
     }
 
     /**
-     * Connect to Deepgram WebSocket API
+     * Connect to Deepgram WebSocket API with secure authentication
      */
     async connectToDeepgram() {
         return new Promise((resolve, reject) => {
             try {
+                // ✅ SECURE: Build connection parameters for Deepgram API
                 const params = new URLSearchParams({
                     language: this.language,
                     model: this.model,
@@ -535,10 +557,15 @@ class DeepgramLiveTranscriber extends EventEmitter {
                     interim_results: this.enableInterimResults,
                     endpointing: 300,
                     utterance_end_ms: 1000,
-                    token: this.apiKey  // Secure token auth via URL parameter
+                    vad_events: true,  // Voice activity detection
+                    token: this.apiKey  // ✅ SECURE: API key via URL param (Deepgram standard)
                 });
 
+                // ✅ SECURE: Use secure WebSocket protocol (wss://) - NEVER use ws://
                 const wsUrl = `${DEEPGRAM_CONFIG.WSS_ENDPOINT}?${params.toString()}`;
+                
+                // 🔒 SECURITY VALIDATION: Ensure secure connection
+                validateSecureWebSocketUrl(wsUrl);
                 
                 this.websocket = new WebSocket(wsUrl);
                 
@@ -548,7 +575,7 @@ class DeepgramLiveTranscriber extends EventEmitter {
                     this.emit(TRANSCRIPTION_EVENTS.CONNECTION_STATUS, {
                         status: this.connectionStatus
                     });
-                    this.log('Connected to Deepgram WebSocket');
+                    this.log('✅ Connected to Deepgram WebSocket securely');
                     resolve();
                 };
                 
@@ -557,7 +584,7 @@ class DeepgramLiveTranscriber extends EventEmitter {
                 };
                 
                 this.websocket.onerror = (error) => {
-                    this.log(`WebSocket error: ${error}`);
+                    this.log(`❌ WebSocket error: ${error}`);
                     this.connectionStatus = CONNECTION_STATUS.FAILED;
                     this.emit(TRANSCRIPTION_EVENTS.CONNECTION_STATUS, {
                         status: this.connectionStatus,
@@ -567,7 +594,7 @@ class DeepgramLiveTranscriber extends EventEmitter {
                 };
                 
                 this.websocket.onclose = (event) => {
-                    this.log(`WebSocket closed: ${event.code} ${event.reason}`);
+                    this.log(`🔌 WebSocket closed: ${event.code} ${event.reason}`);
                     this.connectionStatus = CONNECTION_STATUS.DISCONNECTED;
                     this.emit(TRANSCRIPTION_EVENTS.CONNECTION_STATUS, {
                         status: this.connectionStatus
