@@ -4,6 +4,7 @@
 
 import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'path';
+import { readFileSync } from 'fs';
 
 export default defineConfig(({ mode }) => {
   // Load environment variables based on current mode
@@ -130,7 +131,17 @@ export default defineConfig(({ mode }) => {
 
   // Plugin configuration
   plugins: [
-    // Extension-specific plugins would go here
+    // Copy manifest.json to build directory
+    {
+      name: 'copy-manifest',
+      generateBundle() {
+        this.emitFile({
+          type: 'asset',
+          fileName: 'manifest.json',
+          source: readFileSync(resolve(process.cwd(), 'manifest.json'), 'utf8')
+        });
+      }
+    }
   ],
 
   // Resolve configuration
