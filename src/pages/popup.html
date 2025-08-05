@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=300, height=400" />
+  <title>Live Transcription</title>
+  <link rel="stylesheet" href="../styles/pages/popup.css" />
+</head>
+<body>
+  <div class="popup-container">
+    
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="popup-title">
+        <span class="popup-icon">🎙️</span>
+        <h1>Live Transcription</h1>
+      </div>
+      <div class="popup-status" id="popup-status" data-status="idle">
+        <span class="status-dot"></span>
+        <span class="status-text">Ready</span>
+      </div>
+    </header>
+
+    <!-- Quick Actions -->
+    <section class="popup-actions">
+      <button id="quick-start-btn" class="action-btn primary">
+        <span class="btn-icon">🎙️</span>
+        <span class="btn-text">Start Recording</span>
+      </button>
+      
+      <button id="open-dashboard-btn" class="action-btn secondary">
+        <span class="btn-icon">📊</span>
+        <span class="btn-text">Open Dashboard</span>
+      </button>
+    </section>
+
+    <!-- Recent Activity -->
+    <section class="popup-recent">
+      <h3>Recent Sessions</h3>
+      <div id="recent-sessions" class="recent-list">
+        <div class="recent-item">
+          <div class="recent-info">
+            <span class="recent-duration">2m 34s</span>
+            <span class="recent-words">124 words</span>
+          </div>
+          <span class="recent-time">5 min ago</span>
+        </div>
+        <div class="recent-placeholder">
+          No recent sessions
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Settings -->
+    <section class="popup-settings">
+      <div class="setting-item">
+        <label for="quick-language">Language:</label>
+        <select id="quick-language" class="setting-control">
+          <option value="en-US">English (US)</option>
+          <option value="en-GB">English (UK)</option>
+          <option value="es-ES">Spanish</option>
+          <option value="fr-FR">French</option>
+        </select>
+      </div>
+      
+      <div class="setting-item">
+        <label class="setting-toggle">
+          <input type="checkbox" id="auto-start-toggle" />
+          <span class="toggle-slider"></span>
+          <span class="toggle-label">Auto-start on meetings</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Footer Links -->
+    <footer class="popup-footer">
+      <button id="open-settings-btn" class="footer-link">
+        <span class="link-icon">⚙️</span>
+        <span class="link-text">Settings</span>
+      </button>
+      
+      <button id="open-help-btn" class="footer-link">
+        <span class="link-icon">❓</span>
+        <span class="link-text">Help</span>
+      </button>
+    </footer>
+
+  </div>
+
+  <!-- Load popup controller -->
+  <script type="module" src="../modules/ui/popup.js"></script>
+</body>
+</html>

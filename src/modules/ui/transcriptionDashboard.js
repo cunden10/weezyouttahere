@@ -13,10 +13,10 @@
  * - Handle settings and configuration changes
  * ===================================================================== */
 
-import TranscriptionSessionManager, { SESSION_STATES, SESSION_EVENTS } from './transcriptionSessionManager.js';
+import TranscriptionSessionManager, { SESSION_STATES, SESSION_EVENTS } from '../core/transcriptionSessionManager.js';
 import { showToast, showStatusBanner, clearAllNotifications } from './notificationController.js';
-import { playNotificationSound } from './audioNotificationController.js';
-import { safeStorageGet, safeStorageSet, formatTime } from './coreUtils.js';
+import { playNotificationSound } from '../audio/audioNotificationController.js';
+import { safeStorageGet, safeStorageSet, formatTime } from '../core/coreUtils.js';
 
 /* ------------------------------------------------------------------ */
 /* 🎛️ Dashboard Controller Class                                      */

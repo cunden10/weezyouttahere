@@ -27,31 +27,31 @@
   ],
 
   "background": {
-    "service_worker": "background.js",
+    "service_worker": "src/background/background.js",
     "type": "module"
   },
 
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "src/pages/popup.html",
     "default_title": "Open Live Transcription Dashboard",
     "default_icon": {
-      "16": "icons/microphone-16.png",
-      "32": "icons/microphone-32.png",
-      "48": "icons/microphone-48.png",
-      "128": "icons/microphone-128.png"
+      "16": "src/assets/icons/icon-16.png",
+      "32": "src/assets/icons/icon-32.png",
+      "48": "src/assets/icons/icon-48.png",
+      "128": "src/assets/icons/icon-128.png"
     }
   },
 
   "icons": {
-    "16": "icons/microphone-16.png",
-    "32": "icons/microphone-32.png", 
-    "48": "icons/microphone-48.png",
-    "128": "icons/microphone-128.png"
+    "16": "src/assets/icons/icon-16.png",
+    "32": "src/assets/icons/icon-32.png", 
+    "48": "src/assets/icons/icon-48.png",
+    "128": "src/assets/icons/icon-128.png"
   },
 
-  "options_page": "settings.html",
+  "options_page": "src/pages/settings.html",
   "options_ui": {
-    "page": "settings.html",
+    "page": "src/pages/settings.html",
     "open_in_tab": true
   },
 
@@ -63,8 +63,8 @@
         "https://*.zoom.us/*",
         "https://teams.microsoft.com/*"
       ],
-      "js": ["contentScripts/meetingOverlay.js"],
-      "css": ["contentScripts/meetingOverlay.css"],
+      "js": ["src/content/meetingOverlay.js"],
+      "css": ["src/styles/content/meetingOverlay.css"],
       "run_at": "document_end",
       "all_frames": false
     },
@@ -73,8 +73,8 @@
         "https://app.apollo.io/*",
         "https://*.apollo.io/*"
       ],
-      "js": ["contentScripts/apolloIntegration.js"],
-      "css": ["contentScripts/salesIntegration.css"],
+      "js": ["src/content/apolloIntegration.js"],
+      "css": ["src/styles/content/integrationCommon.css"],
       "run_at": "document_end",
       "all_frames": false
     },
@@ -83,8 +83,8 @@
         "https://app.salesloft.com/*",
         "https://*.salesloft.com/*"
       ],
-      "js": ["contentScripts/salesloftIntegration.js"],
-      "css": ["contentScripts/salesIntegration.css"],
+      "js": ["src/content/salesloftIntegration.js"],
+      "css": ["src/styles/content/integrationCommon.css"],
       "run_at": "document_end",
       "all_frames": false
     }
@@ -93,16 +93,10 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "transcriptionDashboard.html",
-        "popup.html",
-        "settings.html",
-        "styles/*",
-        "assets/sounds/*",
-        "modules/*",
-        "icons/*",
-        "images/*",
-        "integrations/apollo/*",
-        "integrations/salesloft/*"
+        "src/pages/*",
+        "src/styles/*",
+        "src/assets/*",
+        "src/modules/*"
       ],
       "matches": ["<all_urls>"]
     }

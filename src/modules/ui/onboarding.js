@@ -11,9 +11,9 @@
  * - Completion tracking and navigation
  * ===================================================================== */
 
-import { safeStorageGet, safeStorageSet } from '../coreUtils.js';
-import { showToast } from '../notificationController.js';
-import { playNotificationSound } from '../audioNotificationController.js';
+import { safeStorageGet, safeStorageSet } from '../core/coreUtils.js';
+import { showToast } from './notificationController.js';
+import { playNotificationSound } from '../audio/audioNotificationController.js';
 
 /* ------------------------------------------------------------------ */
 /* 🎯 Onboarding Controller Class                                     */
