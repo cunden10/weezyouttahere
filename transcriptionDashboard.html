@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Transcription Dashboard</title>
+  
+  <!-- Core styles for the dashboard -->
+  <link rel="stylesheet" href="transcriptionDashboard.css" />
+  
+  <!-- Notification styles -->
+  <link rel="stylesheet" href="notificationStyles.css" />
+</head>
+<body>
+  <main class="transcription-dashboard" role="main">
+    
+    <!-- Header with title and status indicators -->
+    <header class="dashboard-header">
+      <h1 class="dashboard-title">Live Transcription</h1>
+      
+      <div class="status-panel">
+        <div class="status-item">
+          <span class="status-label">Recording</span>
+          <div id="recording-status" class="status-indicator" 
+               aria-label="Recording status" 
+               data-status="idle">●</div>
+        </div>
+        
+        <div class="status-item">
+          <span class="status-label">Microphone</span>
+          <div id="mic-status" class="status-indicator" 
+               aria-label="Microphone permission status" 
+               data-status="unknown">●</div>
+        </div>
+        
+        <div class="status-item">
+          <span class="status-label">Connection</span>
+          <div id="connection-status" class="status-indicator" 
+               aria-label="Deepgram connection status" 
+               data-status="disconnected">●</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main transcript display area -->
+    <section class="transcript-section">
+      <div class="transcript-header">
+        <h2>Live Transcript</h2>
+        <div class="transcript-stats">
+          <span id="word-count" class="stat-item">0 words</span>
+          <span id="session-duration" class="stat-item">00:00</span>
+        </div>
+      </div>
+      
+      <!-- Live transcript content -->
+      <div id="live-transcript" 
+           class="live-transcript" 
+           aria-live="polite" 
+           aria-label="Live transcription output"
+           tabindex="0">
+        <div class="transcript-placeholder">
+          Click "Start Recording" to begin live transcription
+        </div>
+      </div>
+      
+      <!-- Interim/preview text -->
+      <div id="interim-transcript" 
+           class="interim-transcript" 
+           aria-live="assertive" 
+           aria-label="Interim transcription">
+      </div>
+    </section>
+
+    <!-- Control panel -->
+    <section class="control-panel">
+      
+      <!-- Primary recording controls -->
+      <div class="primary-controls">
+        <button id="start-recording-btn" 
+                class="control-btn primary-btn" 
+                aria-describedby="recording-status">
+          <span class="btn-icon">🎙️</span>
+          <span class="btn-text">Start Recording</span>
+        </button>
+        
+        <button id="stop-recording-btn" 
+                class="control-btn danger-btn" 
+                disabled 
+                aria-describedby="recording-status">
+          <span class="btn-icon">⏹️</span>
+          <span class="btn-text">Stop Recording</span>
+        </button>
+        
+        <button id="pause-recording-btn" 
+                class="control-btn secondary-btn" 
+                disabled>
+          <span class="btn-icon">⏸️</span>
+          <span class="btn-text">Pause</span>
+        </button>
+      </div>
+
+      <!-- Secondary action controls -->
+      <div class="secondary-controls">
+        <button id="copy-transcript-btn" 
+                class="control-btn secondary-btn" 
+                title="Copy transcript to clipboard">
+          <span class="btn-icon">📋</span>
+          <span class="btn-text">Copy</span>
+        </button>
+        
+        <button id="clear-transcript-btn" 
+                class="control-btn secondary-btn" 
+                title="Clear current transcript">
+          <span class="btn-icon">🗑️</span>
+          <span class="btn-text">Clear</span>
+        </button>
+        
+        <button id="export-transcript-btn" 
+                class="control-btn secondary-btn" 
+                title="Export transcript">
+          <span class="btn-icon">💾</span>
+          <span class="btn-text">Export</span>
+        </button>
+        
+        <button id="settings-btn" 
+                class="control-btn secondary-btn" 
+                title="Transcription settings">
+          <span class="btn-icon">⚙️</span>
+          <span class="btn-text">Settings</span>
+        </button>
+      </div>
+      
+    </section>
+
+    <!-- Settings panel (initially hidden) -->
+    <section id="settings-panel" class="settings-panel" hidden>
+      <h3>Transcription Settings</h3>
+      
+      <div class="setting-group">
+        <label for="language-select">Language</label>
+        <select id="language-select" class="setting-control">
+          <option value="en-US">English (US)</option>
+          <option value="en-GB">English (UK)</option>
+          <option value="es-ES">Spanish</option>
+          <option value="fr-FR">French</option>
+          <option value="de-DE">German</option>
+        </select>
+      </div>
+      
+      <div class="setting-group">
+        <label for="model-select">Model</label>
+        <select id="model-select" class="setting-control">
+          <option value="nova-2">Nova 2 (Latest)</option>
+          <option value="nova">Nova (Standard)</option>
+          <option value="enhanced">Enhanced</option>
+        </select>
+      </div>
+      
+      <div class="setting-group">
+        <label>
+          <input type="checkbox" id="punctuation-toggle" checked />
+          Enable punctuation
+        </label>
+      </div>
+      
+      <div class="setting-group">
+        <label>
+          <input type="checkbox" id="interim-results-toggle" checked />
+          Show interim results
+        </label>
+      </div>
+      
+      <div class="setting-actions">
+        <button id="save-settings-btn" class="control-btn primary-btn">Save Settings</button>
+        <button id="cancel-settings-btn" class="control-btn secondary-btn">Cancel</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Load the dashboard controller -->
+  <script type="module" src="transcriptionDashboard.js"></script>
+</body>
+</html>
