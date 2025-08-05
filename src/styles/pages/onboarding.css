@@ -1,0 +1,506 @@
+/* ======================================================================= 
+ * Onboarding Page Styles
+ * ----------------------------------------------------------------------- 
+ * Styles for the multi-step onboarding experience.
+ * Provides a welcoming and guided first-run experience.
+ * ===================================================================== */
+
+:root {
+  --onboarding-primary: #2563eb;
+  --onboarding-success: #059669;
+  --onboarding-warning: #d97706;
+  --onboarding-danger: #dc2626;
+  --onboarding-neutral: #6b7280;
+  
+  --onboarding-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --onboarding-surface: #ffffff;
+  --onboarding-border: #e2e8f0;
+  --onboarding-text: #1e293b;
+  --onboarding-text-muted: #64748b;
+  --onboarding-overlay: rgba(255, 255, 255, 0.95);
+  
+  --onboarding-radius: 0.75rem;
+  --onboarding-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --onboarding-shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  --onboarding-animation: all 300ms ease-in-out;
+}
+
+/* Base onboarding layout */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--onboarding-bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.onboarding-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+}
+
+/* Background pattern */
+.onboarding-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Onboarding steps */
+.onboarding-step {
+  background: var(--onboarding-overlay);
+  backdrop-filter: blur(10px);
+  border-radius: var(--onboarding-radius);
+  box-shadow: var(--onboarding-shadow-lg);
+  padding: 3rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: var(--onboarding-animation);
+}
+
+.onboarding-step.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.onboarding-step.hidden {
+  display: none;
+}
+
+/* Step content */
+.onboarding-content {
+  margin-bottom: 2rem;
+}
+
+.onboarding-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.onboarding-title {
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--onboarding-text);
+}
+
+.onboarding-description {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.125rem;
+  color: var(--onboarding-text-muted);
+  line-height: 1.6;
+}
+
+.onboarding-features {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.onboarding-features li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  color: var(--onboarding-text);
+}
+
+.onboarding-features li::before {
+  content: '✓';
+  color: var(--onboarding-success);
+  font-weight: bold;
+  font-size: 1.125rem;
+}
+
+/* Progress indicator */
+.progress-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.progress-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: #cbd5e1;
+  transition: var(--onboarding-animation);
+}
+
+.progress-dot.active {
+  background: var(--onboarding-primary);
+  transform: scale(1.2);
+}
+
+.progress-dot.completed {
+  background: var(--onboarding-success);
+}
+
+/* Permission section */
+.permission-section {
+  background: var(--onboarding-surface);
+  border: 1px solid var(--onboarding-border);
+  border-radius: calc(var(--onboarding-radius) * 0.75);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.permission-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.permission-item:last-child {
+  border-bottom: none;
+}
+
+.permission-info {
+  flex: 1;
+}
+
+.permission-title {
+  font-weight: 600;
+  color: var(--onboarding-text);
+  margin-bottom: 0.25rem;
+}
+
+.permission-description {
+  font-size: 0.875rem;
+  color: var(--onboarding-text-muted);
+}
+
+.permission-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.permission-status.granted {
+  color: var(--onboarding-success);
+}
+
+.permission-status.denied {
+  color: var(--onboarding-danger);
+}
+
+.permission-status.pending {
+  color: var(--onboarding-warning);
+}
+
+/* Permission buttons */
+.permission-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--onboarding-primary);
+  border-radius: calc(var(--onboarding-radius) * 0.5);
+  background: var(--onboarding-primary);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--onboarding-animation);
+}
+
+.permission-btn:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.permission-btn:disabled {
+  background: #e2e8f0;
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Preferences section */
+.preferences-section {
+  background: var(--onboarding-surface);
+  border: 1px solid var(--onboarding-border);
+  border-radius: calc(var(--onboarding-radius) * 0.75);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.preference-group {
+  margin-bottom: 1.5rem;
+}
+
+.preference-group:last-child {
+  margin-bottom: 0;
+}
+
+.preference-label {
+  display: block;
+  font-weight: 500;
+  color: var(--onboarding-text);
+  margin-bottom: 0.5rem;
+}
+
+.preference-control {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--onboarding-border);
+  border-radius: calc(var(--onboarding-radius) * 0.5);
+  font-size: 0.875rem;
+  background: var(--onboarding-surface);
+  color: var(--onboarding-text);
+}
+
+.preference-control:focus {
+  outline: none;
+  border-color: var(--onboarding-primary);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+}
+
+.preference-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.preference-checkbox input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--onboarding-primary);
+}
+
+/* Navigation buttons */
+.onboarding-navigation {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  border: 1px solid transparent;
+  border-radius: var(--onboarding-radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--onboarding-animation);
+  text-decoration: none;
+  background: transparent;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.primary-nav {
+  background: var(--onboarding-primary);
+  color: white;
+  border-color: var(--onboarding-primary);
+}
+
+.primary-nav:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: var(--onboarding-shadow);
+}
+
+.secondary-nav {
+  background: transparent;
+  color: var(--onboarding-text);
+  border-color: var(--onboarding-border);
+}
+
+.secondary-nav:hover {
+  background: var(--onboarding-surface);
+  border-color: var(--onboarding-primary);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: calc(var(--onboarding-radius) * 0.5);
+  backdrop-filter: blur(5px);
+  background: rgba(255, 255, 255, 0.1);
+  transition: var(--onboarding-animation);
+}
+
+.skip-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Support links */
+.support-links {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.support-link {
+  color: var(--onboarding-primary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  margin: 0 1rem;
+  font-weight: 500;
+}
+
+.support-link:hover {
+  text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .onboarding-container {
+    padding: 1rem;
+  }
+  
+  .onboarding-step {
+    padding: 2rem 1.5rem;
+  }
+  
+  .onboarding-title {
+    font-size: 1.5rem;
+  }
+  
+  .onboarding-description {
+    font-size: 1rem;
+  }
+  
+  .onboarding-navigation {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .nav-btn {
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .skip-link {
+    position: static;
+    margin-bottom: 1rem;
+    align-self: flex-end;
+  }
+  
+  .support-links {
+    text-align: center;
+  }
+  
+  .support-link {
+    display: block;
+    margin: 0.5rem 0;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --onboarding-bg: linear-gradient(135deg, #1e3a8a 0%, #4c1d95 100%);
+    --onboarding-overlay: rgba(15, 23, 42, 0.95);
+    --onboarding-surface: #1e293b;
+    --onboarding-border: #334155;
+    --onboarding-text: #f1f5f9;
+    --onboarding-text-muted: #94a3b8;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --onboarding-border: #000000;
+    --onboarding-text: #000000;
+    --onboarding-text-muted: #333333;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --onboarding-animation: none;
+  }
+  
+  .onboarding-step,
+  .progress-dot,
+  .nav-btn {
+    transition: none;
+  }
+  
+  .primary-nav:hover {
+    transform: none;
+  }
+}
+
+/* Animation keyframes */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Step-specific animations */
+.onboarding-step.entering {
+  animation: slideInUp 400ms ease-out;
+}
+
+.permission-section {
+  animation: fadeIn 600ms ease-out 200ms both;
+}
+
+.preferences-section {
+  animation: fadeIn 600ms ease-out 300ms both;
+}
