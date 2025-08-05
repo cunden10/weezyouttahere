@@ -336,49 +336,77 @@ class SalesLoftIntegration {
       console.log('[SalesLoft] Failed to signal readiness:', error);
     });
 
-    // ✅ Listen for messages from the extension background script
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      console.log('[SalesLoft] Received message:', message.type);
+    // ✅ IMPROVED: Listen for messages with guaranteed responses
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      console.log('[SalesLoft] Received message:', request.type);
       
+      // Handle PING immediately
+      if (request.type === 'PING') {
+        sendResponse({ 
+          success: true,
+          context: 'salesloft', 
+          url: window.location.href,
+          ready: true,
+          timestamp: Date.now()
+        });
+        return false; // Synchronous response, no need to keep port open
+      }
+      
+      // Handle START_TRANSCRIPTION with async support
+      if (request.type === 'START_TRANSCRIPTION') {
+        this.startTranscriptionAsync(request.data).then(result => {
+          sendResponse({ success: true, data: result });
+        }).catch(error => {
+          sendResponse({ success: false, error: error.message });
+        });
+        return true; // Keep message channel open for async response
+      }
+      
+      // Handle STOP_TRANSCRIPTION with async support
+      if (request.type === 'STOP_TRANSCRIPTION') {
+        this.stopTranscriptionAsync().then(result => {
+          sendResponse({ success: true, data: result });
+        }).catch(error => {
+          sendResponse({ success: false, error: error.message });
+        });
+        return true; // Keep message channel open for async response
+      }
+      
+      // Handle other message types synchronously
       try {
-        switch (message.type) {
-          case 'PING':
-            // Health check from background script
-            sendResponse({ 
-              success: true, 
-              context: 'salesloft',
-              url: window.location.href,
-              ready: true,
-              timestamp: Date.now()
-            });
-            break;
-            
+        switch (request.type) {
           case 'TRANSCRIPTION_STARTED':
-            this.onTranscriptionStarted(message.data);
+            this.onTranscriptionStarted(request.data);
             sendResponse({ success: true, handled: 'TRANSCRIPTION_STARTED' });
             break;
             
           case 'TRANSCRIPTION_STOPPED':
-            this.onTranscriptionStopped(message.data);
+            this.onTranscriptionStopped(request.data);
             sendResponse({ success: true, handled: 'TRANSCRIPTION_STOPPED' });
             break;
             
           case 'TRANSCRIPTION_UPDATE':
-            this.onTranscriptionUpdate(message.data);
+            this.onTranscriptionUpdate(request.data);
             sendResponse({ success: true, handled: 'TRANSCRIPTION_UPDATE' });
             break;
             
           case 'TRANSCRIPTION_ERROR':
-            this.onTranscriptionError(message.data);
+            this.onTranscriptionError(request.data);
             sendResponse({ success: true, handled: 'TRANSCRIPTION_ERROR' });
             break;
             
+          case 'GET_CONTACT_INFO':
+            const contactInfo = this.getCurrentContactInfo();
+            sendResponse({ success: true, data: contactInfo });
+            break;
+            
           default:
-            // Always respond to prevent lastError
+            // ✅ Always send a response to prevent lastError
             sendResponse({ 
-              success: true, 
-              message: 'Unknown message type',
-              type: message.type 
+              success: true,
+              message: 'Message received but no specific handler',
+              type: request.type,
+              timestamp: Date.now()
             });
         }
       } catch (error) {
@@ -386,12 +414,11 @@ class SalesLoftIntegration {
         sendResponse({ 
           success: false, 
           error: error.message,
-          type: message.type 
+          type: request.type 
         });
       }
       
-      // ✅ Keep message channel open for async operations
-      return true;
+      return false; // Synchronous response for non-async operations
     });
   }
 
@@ -444,6 +471,82 @@ class SalesLoftIntegration {
     } catch (error) {
       console.error('[SalesLoft Integration] Error stopping transcription:', error);
     }
+  }
+
+  /**
+   * ✅ ASYNC: Start transcription with promise-based response
+   * Used by message handler for proper async support
+   */
+  async startTranscriptionAsync(data = {}) {
+    try {
+      console.log('[SalesLoft] Starting transcription async...', data);
+      
+      // Update current contact if provided
+      if (data.contact) {
+        this.currentContact = data.contact;
+      }
+      
+      // Start the transcription process
+      this.transcriptionActive = true;
+      this.updateTranscriptionUI('active');
+      
+      // Initialize contact detection if not already done
+      if (!this.currentContact) {
+        this.currentContact = this.detectCurrentContact();
+      }
+      
+      return {
+        started: true,
+        contact: this.currentContact,
+        url: window.location.href,
+        timestamp: Date.now()
+      };
+    } catch (error) {
+      console.error('[SalesLoft] Failed to start transcription async:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * ✅ ASYNC: Stop transcription with promise-based response
+   * Used by message handler for proper async support
+   */
+  async stopTranscriptionAsync() {
+    try {
+      console.log('[SalesLoft] Stopping transcription async...');
+      
+      this.transcriptionActive = false;
+      this.updateTranscriptionUI('stopped');
+      
+      // Save any accumulated transcript
+      if (this.callSummary) {
+        await this.saveCallSummary();
+      }
+      
+      return {
+        stopped: true,
+        summary: this.callSummary,
+        contact: this.currentContact,
+        timestamp: Date.now()
+      };
+    } catch (error) {
+      console.error('[SalesLoft] Failed to stop transcription async:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * ✅ Get current contact information
+   * Used by message handler to provide contact data
+   */
+  getCurrentContactInfo() {
+    return {
+      contact: this.currentContact,
+      company: this.extractCompanyName(),
+      url: window.location.href,
+      transcriptionActive: this.transcriptionActive,
+      timestamp: Date.now()
+    };
   }
 
   /**

@@ -278,47 +278,76 @@ class ApolloIntegration {
       console.log('[Apollo] Failed to signal readiness:', error);
     });
 
-    // ✅ Listen for messages from the extension background script
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      console.log('[Apollo] Received message:', message.type);
+    // ✅ IMPROVED: Listen for messages with guaranteed responses
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      console.log('[Apollo] Received message:', request.type);
       
+      // Handle PING immediately
+      if (request.type === 'PING') {
+        sendResponse({ 
+          success: true,
+          context: 'apollo', 
+          url: window.location.href,
+          ready: true,
+          timestamp: Date.now()
+        });
+        return false; // Synchronous response
+      }
+      
+      // Handle async operations
+      if (request.type === 'START_TRANSCRIPTION') {
+        this.startTranscriptionAsync(request.data).then(result => {
+          sendResponse({ success: true, data: result });
+        }).catch(error => {
+          sendResponse({ success: false, error: error.message });
+        });
+        return true; // Keep message channel open for async response
+      }
+      
+      if (request.type === 'STOP_TRANSCRIPTION') {
+        this.stopTranscriptionAsync().then(result => {
+          sendResponse({ success: true, data: result });
+        }).catch(error => {
+          sendResponse({ success: false, error: error.message });
+        });
+        return true; // Keep message channel open for async response
+      }
+      
+      // Handle other message types synchronously
       try {
-        switch (message.type) {
-          case 'PING':
-            sendResponse({ 
-              success: true, 
-              context: 'apollo',
-              url: window.location.href,
-              ready: true,
-              timestamp: Date.now()
-            });
-            break;
-            
+        switch (request.type) {
           case 'TRANSCRIPTION_STARTED':
-            this.onTranscriptionStarted(message.data);
+            this.onTranscriptionStarted(request.data);
             sendResponse({ success: true, handled: 'TRANSCRIPTION_STARTED' });
             break;
             
           case 'TRANSCRIPTION_STOPPED':
-            this.onTranscriptionStopped(message.data);
+            this.onTranscriptionStopped(request.data);
             sendResponse({ success: true, handled: 'TRANSCRIPTION_STOPPED' });
             break;
             
           case 'TRANSCRIPTION_UPDATE':
-            this.onTranscriptionUpdate(message.data);
+            this.onTranscriptionUpdate(request.data);
             sendResponse({ success: true, handled: 'TRANSCRIPTION_UPDATE' });
             break;
             
           case 'TRANSCRIPTION_ERROR':
-            this.onTranscriptionError(message.data);
+            this.onTranscriptionError(request.data);
             sendResponse({ success: true, handled: 'TRANSCRIPTION_ERROR' });
             break;
             
+          case 'GET_CONTACT_INFO':
+            const contactInfo = this.getCurrentContactInfo();
+            sendResponse({ success: true, data: contactInfo });
+            break;
+            
           default:
+            // ✅ Always send a response to prevent lastError
             sendResponse({ 
-              success: true, 
-              message: 'Unknown message type',
-              type: message.type 
+              success: true,
+              message: 'Message received but no specific handler',
+              type: request.type,
+              timestamp: Date.now()
             });
         }
       } catch (error) {
@@ -326,11 +355,11 @@ class ApolloIntegration {
         sendResponse({ 
           success: false, 
           error: error.message,
-          type: message.type 
+          type: request.type 
         });
       }
       
-      return true; // Keep message channel open
+      return false; // Synchronous response for non-async operations
     });
   }
 
@@ -383,6 +412,78 @@ class ApolloIntegration {
     } catch (error) {
       console.error('[Apollo Integration] Error stopping transcription:', error);
     }
+  }
+
+  /**
+   * ✅ ASYNC: Start transcription with promise-based response
+   * Used by message handler for proper async support
+   */
+  async startTranscriptionAsync(data = {}) {
+    try {
+      console.log('[Apollo] Starting transcription async...', data);
+      
+      if (data.contact) {
+        this.currentContact = data.contact;
+      }
+      
+      this.transcriptionActive = true;
+      this.updateTranscriptionUI('active');
+      
+      if (!this.currentContact) {
+        this.currentContact = this.detectCurrentContact();
+      }
+      
+      return {
+        started: true,
+        contact: this.currentContact,
+        url: window.location.href,
+        timestamp: Date.now()
+      };
+    } catch (error) {
+      console.error('[Apollo] Failed to start transcription async:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * ✅ ASYNC: Stop transcription with promise-based response
+   * Used by message handler for proper async support
+   */
+  async stopTranscriptionAsync() {
+    try {
+      console.log('[Apollo] Stopping transcription async...');
+      
+      this.transcriptionActive = false;
+      this.updateTranscriptionUI('stopped');
+      
+      if (this.callSummary) {
+        await this.saveCallSummary();
+      }
+      
+      return {
+        stopped: true,
+        summary: this.callSummary,
+        contact: this.currentContact,
+        timestamp: Date.now()
+      };
+    } catch (error) {
+      console.error('[Apollo] Failed to stop transcription async:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * ✅ Get current contact information
+   * Used by message handler to provide contact data
+   */
+  getCurrentContactInfo() {
+    return {
+      contact: this.currentContact,
+      company: this.extractCompanyName(),
+      url: window.location.href,
+      transcriptionActive: this.transcriptionActive,
+      timestamp: Date.now()
+    };
   }
 
   /**
