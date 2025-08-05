@@ -53,6 +53,7 @@ if (window.location.protocol === 'https:' || window.location.protocol === 'http:
     /* 📝  Transcription Handlers                                         */
     /* ------------------------------------------------------------------ */
     
+    /* eslint-disable no-inner-declarations */
     async function handleActivateTranscription(config, sendResponse) {
       try {
         if (isTranscriptionActive) {

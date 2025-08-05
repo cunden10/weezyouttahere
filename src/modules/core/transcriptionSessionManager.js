@@ -14,7 +14,7 @@
  * ================================================================ */
 
 import createLiveTranscriber from '../activation/transcriptionBootstrap.js';
-import { MiniEmitter, safeStorageGet, safeStorageSet, delay } from './coreUtils.js';
+import { MiniEmitter, safeStorageGet, safeStorageSet } from './coreUtils.js';
 import { playNotificationSound } from '../audio/audioNotificationController.js';
 
 // API key injected at build time
@@ -184,7 +184,7 @@ export default class TranscriptionSessionManager extends MiniEmitter {
       this.#stats.endTime = Date.now();
       
       if (this.#config.enableSounds) {
-        playSound('deactivated');
+        playNotificationSound('deactivated');
       }
 
       this.#setState(SESSION_STATES.IDLE);
@@ -469,7 +469,7 @@ export default class TranscriptionSessionManager extends MiniEmitter {
     console.error(`[TranscriptionSessionManager] ${context}:`, error);
     
     if (this.#config.enableSounds) {
-      playSound('error');
+      playNotificationSound('error');
     }
 
     this.emit(SESSION_EVENTS.ERROR_OCCURRED, {

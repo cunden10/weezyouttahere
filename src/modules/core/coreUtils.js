@@ -111,7 +111,7 @@ export async function waitFor(predicate, {
   timeout  = 5_000
 } = {}) {
   const start = Date.now();
-  /* eslint-disable no-await-in-loop */
+  /* eslint-disable no-await-in-loop, no-constant-condition */
   while (true) {
     const result = await predicate();
     if (result) return result;

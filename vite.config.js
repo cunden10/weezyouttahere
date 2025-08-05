@@ -42,6 +42,13 @@ export default defineConfig(({ mode }) => {
         
         // Content scripts
         contentScript: resolve(__dirname, 'src/content/contentScript.js'),
+        meetingOverlay: resolve(__dirname, 'src/content/meetingOverlay.js'),
+        apolloIntegration: resolve(__dirname, 'src/content/apolloIntegration.js'),
+        salesloftIntegration: resolve(__dirname, 'src/content/salesloftIntegration.js'),
+        
+        // Content styles
+        'styles/meetingOverlay': resolve(__dirname, 'src/styles/content/meetingOverlay.css'),
+        'styles/integrationCommon': resolve(__dirname, 'src/styles/content/integrationCommon.css'),
         
         // Extension script manager
         extensionScriptManager: resolve(__dirname, 'src/background/extensionScriptManager.js')
