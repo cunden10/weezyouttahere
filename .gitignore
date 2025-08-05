@@ -13,12 +13,19 @@ dist/
 *.crx
 *.xpi
 
+# Vite
+.vite/
+vite.config.js.timestamp-*
+
 # Environment variables
 .env
 .env.local
 .env.development
+.env.development.local
 .env.test
+.env.test.local
 .env.production
+.env.production.local
 
 # IDE and editor files
 .vscode/

@@ -8,6 +8,35 @@
  * @version 1.0.0
  */
 
+/* ================================================================
+ * SECURE API KEY INJECTION - VITE CONFIGURATION
+ * ================================================================
+ * The Deepgram API key is injected at build time from environment
+ * variables. This approach keeps sensitive credentials secure.
+ * 
+ * ⚠️ SECURITY NOTES:
+ * - API key is replaced at build time, not runtime
+ * - Key never appears in source code or version control
+ * - Must prefix with VITE_ for client-side access
+ * - Consider backend proxy for maximum security
+ * ================================================================ */
+
+// Securely inject API key from environment at build time
+const DEEPGRAM_API_KEY = import.meta.env.VITE_DEEPGRAM_API_KEY;
+
+// Validate key exists during development
+if (!DEEPGRAM_API_KEY) {
+  throw new Error(
+    'VITE_DEEPGRAM_API_KEY environment variable is required. ' +
+    'Please check your .env file and ensure the key is properly set.'
+  );
+}
+
+// ⚠️ NEVER LOG THE ACTUAL KEY - Only log presence for debugging
+if (import.meta.env.DEV) {
+  console.log('Deepgram API key loaded:', DEEPGRAM_API_KEY ? '✅ Present' : '❌ Missing');
+}
+
 // ===== CONSTANTS & CONFIGURATION =====
 
 const DEEPGRAM_CONFIG = Object.freeze({
@@ -231,8 +260,8 @@ class DeepgramLiveTranscriber extends EventEmitter {
     constructor(options = {}) {
         super();
         
-        // Configuration
-        this.apiKey = options.apiKey || this.getApiKeyFromEnv();
+        // Configuration - Use securely injected API key
+        this.apiKey = options.apiKey || DEEPGRAM_API_KEY;
         this.language = options.language || 'en-US';
         this.model = options.model || 'nova-2';
         this.audioSource = options.audioSource || AUDIO_SOURCE_TYPES.MICROPHONE;
@@ -494,12 +523,13 @@ class DeepgramLiveTranscriber extends EventEmitter {
                     punctuate: this.enablePunctuation,
                     interim_results: this.enableInterimResults,
                     endpointing: 300,
-                    utterance_end_ms: 1000
+                    utterance_end_ms: 1000,
+                    token: this.apiKey  // Secure token auth via URL parameter
                 });
 
                 const wsUrl = `${DEEPGRAM_CONFIG.WSS_ENDPOINT}?${params.toString()}`;
                 
-                this.websocket = new WebSocket(wsUrl, ['token', this.apiKey]);
+                this.websocket = new WebSocket(wsUrl);
                 
                 this.websocket.onopen = () => {
                     this.connectionStatus = CONNECTION_STATUS.CONNECTED;

@@ -10,10 +10,11 @@
     "npm": ">=8.0.0"
   },
   "scripts": {
-    "build": "node tools/build.js",
-    "build:chrome": "node tools/build.js --target=chrome",
-    "build:firefox": "node tools/build.js --target=firefox",
-    "build:edge": "node tools/build.js --target=edge",
+    "build": "vite build",
+    "build:chrome": "vite build --outDir=build/chrome",
+    "build:firefox": "vite build --outDir=build/firefox",
+    "build:edge": "vite build --outDir=build/edge",
+    "build:legacy": "node tools/build.js",
     "package": "node tools/package.js",
     "validate": "node tools/validate.js",
     "test": "npm run test:unit && npm run test:integration",
@@ -23,11 +24,13 @@
     "lint": "eslint src/**/*.js",
     "lint:fix": "eslint src/**/*.js --fix",
     "format": "prettier --write src/**/*.{js,css,html}",
-    "dev": "node tools/build.js --watch --target=chrome",
+    "dev": "vite",
+    "dev:legacy": "node tools/build.js --watch --target=chrome",
     "clean": "rimraf build/*",
     "deploy": "node tools/deploy.js"
   },
   "devDependencies": {
+    "vite": "^5.0.0",
     "@playwright/test": "^1.40.0",
     "archiver": "^6.0.1",
     "eslint": "^8.55.0",
@@ -36,7 +39,8 @@
     "prettier": "^3.1.0",
     "rimraf": "^5.0.5",
     "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "dotenv": "^16.3.0"
   },
   "dependencies": {},
   "repository": {
