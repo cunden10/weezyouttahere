@@ -1,156 +1,154 @@
 /* =======================================================================
  * audioNotificationController.js
  * -----------------------------------------------------------------------
- * Central helper for loading, caching, and playing short UI sounds
- * (toasts, activation cues, error beeps, etc.) in a Deepgram-powered
- * browser extension or web-app.
+ * Centralised utility for loading, caching, and playing short UI sounds
+ * (activation tones, error beeps, call rings, etc.) in a browser-based
+ * Deepgram transcription extension or web app.
  *
  * Public API
- * ----------
- *   playNotificationSound(key, opts?)     → plays a registered sound
- *   loadAudioAssets(keys?)                → pre-loads one or more sounds
- *   registerCustomSound(key, src, preload = false)
- *   setMasterVolume(value)                → 0.0 – 1.0 (default 1)
+ * ──────────
+ *   playNotificationSound(key, opts)     → plays a registered sound
+ *   loadAudioAssets(keys?)               → pre-loads one or more sounds
+ *   registerCustomSound(key, url, preload?)
+ *   setMasterVolume(value)               → 0.0 – 1.0 (default = 1)
  *
  * All identifiers are original and vendor-agnostic.
  * ===================================================================== */
 
-const ASSET_PATH = '/assets/sounds/';  // Adjust if your build system rewrites paths
+const DEFAULT_SOUND_PATH = '/assets/sounds/';      // Adjust for your bundler
+const DEFAULT_VOLUME     = 1;                      // 0 – 1 (permanent master)
 
-/* Built-in sound map — extend via registerCustomSound() */
-const SOUND_FILES = new Map(Object.entries({
-  chime         : 'confirmation-beep.ogg',
-  activated     : 'transcription-activated.mp3',
-  deactivated   : 'transcription-deactivated.mp3',
-  start         : 'recording-start.wav',
-  stop          : 'recording-stop.wav',
-  error         : 'alert-error.mp3',
-  ring          : 'alert-ring.wav'
-}));
-
-/* Caches <key, HTMLAudioElement> */
-const loadedSounds = new Map();
-
-/* Master volume (0–1) applied to all new Audio instances */
-let masterVolume = 1;
+/* Built-in sound map – extend via registerCustomSound() at runtime */
+const BUILT_IN_SOUNDS = {
+  chime       : 'confirmation-beep.ogg',
+  activated   : 'transcription-activated.mp3',
+  deactivated : 'transcription-deactivated.mp3',
+  start       : 'recording-start.wav',
+  stop        : 'recording-stop.wav',
+  error       : 'alert-error.mp3',
+  ring        : 'alert-ring.wav'
+};
 
 /* ------------------------------------------------------------------ */
-/* 🔊 Core Functions                                                  */
+/* 🔒 Internal state                                                  */
+/* ------------------------------------------------------------------ */
+
+const soundSources  = new Map(Object.entries(BUILT_IN_SOUNDS)); // <key, filename|URL>
+const loadedSounds  = new Map();                                 // <key, HTMLAudioElement>
+let   masterVolume  = DEFAULT_VOLUME;
+
+/* ------------------------------------------------------------------ */
+/* 🔊  Public functions                                               */
 /* ------------------------------------------------------------------ */
 
 /**
- * Play a registered notification sound.
- * Auto-loads the asset the first time it is requested.
+ * Play a registered sound key. The first call downloads & caches the file.
  *
- * @param {string}  key                  Map key (e.g. "chime")
- * @param {Object}  [opts]
- * @param {boolean} [opts.loop=false]    Loop audio (useful for 'ring')
- * @param {number}  [opts.volume=1]      Per-playback relative volume (0–1)
- * @returns {Promise<HTMLAudioElement>}  Resolves with the Audio node
+ * @param {string}  key                       Identifier (e.g. "chime")
+ * @param {Object}  opts
+ * @param {number}  [opts.volume=1]           Per-playback relative volume
+ * @param {boolean} [opts.loop=false]         Loop audio (e.g. "ring")
+ * @returns {Promise<HTMLAudioElement>}       Audio element used for playback
  */
 export async function playNotificationSound(key, opts = {}) {
-  const { loop = false, volume = 1 } = opts;
+  const { volume = 1, loop = false } = opts;
+  const audio = await _ensureSoundLoaded(key);
 
-  const audio = await ensureSoundLoaded(key);
-  if (!audio) throw new Error(`Unknown sound key: ${key}`);
+  if (!audio) throw new Error(`audioNotificationController: Unknown sound "${key}"`);
 
-  /* Clone to allow overlapping playback */
-  const instance = audio.cloneNode();
-  instance.volume = Math.max(0, Math.min(1, masterVolume * volume));
-  instance.loop   = loop;
+  // Clone to allow overlapping playbacks
+  const instance     = audio.cloneNode();
+  instance.volume    = Math.max(0, Math.min(1, masterVolume * volume));
+  instance.loop      = loop;
 
   try {
     await instance.play();
   } catch (err) {
-    // Autoplay policies may block audio before user interaction
-    console.warn('[AudioController] Playback failed:', err);
+    // Autoplay policies can block audio until user interaction
+    console.warn('[audioNotificationController] Playback blocked:', err);
   }
   return instance;
 }
 
 /**
- * Pre-load one or more sounds into the cache.
- * Useful to avoid latency before first playback.
- *
- * @param {string[]} [keys]  Keys to preload (default = all)
+ * Pre-load a subset (or all) sounds to reduce first-play latency.
+ * @param {string[]} [keys]  Keys to preload (default = all registered)
  */
-export async function loadAudioAssets(keys = [...SOUND_FILES.keys()]) {
-  await Promise.all(keys.map(ensureSoundLoaded));
+export async function loadAudioAssets(keys = [...soundSources.keys()]) {
+  await Promise.all(keys.map(_ensureSoundLoaded));
 }
 
 /**
- * Register a new custom sound at runtime.
- *
- * @param {string}   key        Unique identifier (e.g. "myAlert")
- * @param {string}   src        Relative or absolute URL
- * @param {boolean}  preload    Whether to load immediately
+ * Dynamically register a new sound at runtime.
+ * @param {string}   key        Unique identifier
+ * @param {string}   url        Absolute or relative URL of audio file
+ * @param {boolean}  [preload]  Pre-load immediately (default false)
  */
-export async function registerCustomSound(key, src, preload = false) {
-  if (SOUND_FILES.has(key)) {
+export async function registerCustomSound(key, url, preload = false) {
+  if (soundSources.has(key)) {
     throw new Error(`Sound key "${key}" already exists`);
   }
-  SOUND_FILES.set(key, src);
-  if (preload) await ensureSoundLoaded(key);
+  soundSources.set(key, url);
+  if (preload) await _ensureSoundLoaded(key);
 }
 
 /**
- * Globally adjust volume for *future* playbacks.
- * @param {number} value  0.0 – 1.0
+ * Adjust global master volume for future playbacks.
+ * @param {number} value  Range 0.0 – 1.0
  */
 export function setMasterVolume(value) {
   masterVolume = Math.max(0, Math.min(1, value));
 }
 
 /* ------------------------------------------------------------------ */
-/* 🛠️  Internal Helpers                                              */
+/* 🛠️  Internal helpers                                              */
 /* ------------------------------------------------------------------ */
 
-async function ensureSoundLoaded(key) {
+async function _ensureSoundLoaded(key) {
   if (loadedSounds.has(key)) return loadedSounds.get(key);
 
-  if (!SOUND_FILES.has(key)) return null;
+  if (!soundSources.has(key)) return null;
 
-  const src      = resolveAssetUrl(SOUND_FILES.get(key));
-  const audio    = new Audio(src);
-  audio.preload  = 'auto';
+  const src   = _resolveUrl(soundSources.get(key));
+  const audio = new Audio(src);
+  audio.preload = 'auto';
 
-  const ready = new Promise((res, rej) => {
-    audio.addEventListener('canplaythrough', () => res(audio), { once: true });
-    audio.addEventListener('error', () => rej(new Error(`Failed to load: ${src}`)), { once: true });
+  const ready = new Promise((resolve, reject) => {
+    audio.addEventListener('canplaythrough', () => resolve(audio), { once: true });
+    audio.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), { once: true });
   });
 
   loadedSounds.set(key, audio);
   return ready;
 }
 
-function resolveAssetUrl(file) {
-  // Works in both extension & regular web contexts
+function _resolveUrl(fileOrUrl) {
+  // If the path already looks like a full URL, keep it
+  if (/^https?:\/\//.test(fileOrUrl)) return fileOrUrl;
+
+  // For extensions, runtime.getURL guarantees correct path inside the bundle
   if (typeof chrome?.runtime?.getURL === 'function') {
-    return chrome.runtime.getURL(`assets/sounds/${file}`);
+    return chrome.runtime.getURL(`assets/sounds/${fileOrUrl}`);
   }
   if (typeof browser?.runtime?.getURL === 'function') {
-    return browser.runtime.getURL(`assets/sounds/${file}`);
+    return browser.runtime.getURL(`assets/sounds/${fileOrUrl}`);
   }
-  // Fallback for non-extension builds
-  return `${ASSET_PATH}${file}`;
+  // Fallback for regular web builds
+  return `${DEFAULT_SOUND_PATH}${fileOrUrl}`;
 }
 
 /* ------------------------------------------------------------------ */
-/* 📚  Demo Usage                                                     */
+/* 📚  Usage Example                                                  */
 /* ------------------------------------------------------------------ */
-
 /*
-import { playNotificationSound, loadAudioAssets } from './audioNotificationController.js';
+import { playNotificationSound } from './audioNotificationController.js';
 
-await loadAudioAssets();                     // preload all (optional)
-playNotificationSound('activated');          // subtle sweep tone
-playNotificationSound('error', { volume: 0.8 });
+async function onPermissionGranted() {
+  // …. your logic …
+  await playNotificationSound('chime');             // happy path
+}
 
-document.querySelector('#grant-btn')
-  .addEventListener('click', async () => {
-    const granted = await navigator.mediaDevices.getUserMedia({ audio: true })
-                       .then(() => true).catch(() => false);
-
-    playNotificationSound(granted ? 'chime' : 'error');
-  });
+async function onErrorOccured() {
+  await playNotificationSound('error', { volume: 0.8 });
+}
 */
