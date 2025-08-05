@@ -2,75 +2,137 @@
   "manifest_version": 3,
   "name": "Live Transcription Extension",
   "version": "1.0.0",
-  "description": "Real-time audio transcription using Deepgram's live streaming API with modern browser support.",
-  
+  "description": "Real-time audio transcription powered by Deepgram. Stream microphone audio and get instant, accurate transcripts in your browser.",
+  "author": "Your Development Team",
+  "minimum_chrome_version": "116",
+
   "permissions": [
+    "microphone",
     "storage",
-    "declarativeNetRequest",
-    "activeTab"
+    "tabs",
+    "activeTab",
+    "scripting",
+    "action"
   ],
-  
+
   "host_permissions": [
     "wss://api.deepgram.com/*",
-    "https://api.deepgram.com/*"
+    "https://api.deepgram.com/*",
+    "https://app.apollo.io/*",
+    "https://api.apollo.io/*",
+    "https://*.apollo.io/*",
+    "https://app.salesloft.com/*",
+    "https://api.salesloft.com/*",
+    "https://*.salesloft.com/*"
   ],
-  
-  "declarative_net_request": {
-    "rule_resources": [
-      {
-        "id": "deepgram_rules",
-        "enabled": true,
-        "path": "deepgramRuleset.json"
-      }
-    ]
-  },
-  
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' wss://api.deepgram.com https://api.deepgram.com;"
-  },
-  
-  "action": {
-    "default_popup": "index.html",
-    "default_title": "Live Transcription",
-    "default_icon": {
-      "16": "assets/icons/icon-16.png",
-      "32": "assets/icons/icon-32.png",
-      "48": "assets/icons/icon-48.png",
-      "128": "assets/icons/icon-128.png"
-    }
-  },
-  
-  "icons": {
-    "16": "assets/icons/icon-16.png",
-    "32": "assets/icons/icon-32.png", 
-    "48": "assets/icons/icon-48.png",
-    "128": "assets/icons/icon-128.png"
-  },
-  
+
   "background": {
     "service_worker": "background.js",
     "type": "module"
   },
-  
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Open Live Transcription Dashboard",
+    "default_icon": {
+      "16": "icons/microphone-16.png",
+      "32": "icons/microphone-32.png",
+      "48": "icons/microphone-48.png",
+      "128": "icons/microphone-128.png"
+    }
+  },
+
+  "icons": {
+    "16": "icons/microphone-16.png",
+    "32": "icons/microphone-32.png", 
+    "48": "icons/microphone-48.png",
+    "128": "icons/microphone-128.png"
+  },
+
+  "options_page": "settings.html",
+  "options_ui": {
+    "page": "settings.html",
+    "open_in_tab": true
+  },
+
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_idle"
+      "matches": [
+        "https://meet.google.com/*",
+        "https://zoom.us/*",
+        "https://*.zoom.us/*",
+        "https://teams.microsoft.com/*"
+      ],
+      "js": ["contentScripts/meetingOverlay.js"],
+      "css": ["contentScripts/meetingOverlay.css"],
+      "run_at": "document_end",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://app.apollo.io/*",
+        "https://*.apollo.io/*"
+      ],
+      "js": ["contentScripts/apolloIntegration.js"],
+      "css": ["contentScripts/salesIntegration.css"],
+      "run_at": "document_end",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://app.salesloft.com/*",
+        "https://*.salesloft.com/*"
+      ],
+      "js": ["contentScripts/salesloftIntegration.js"],
+      "css": ["contentScripts/salesIntegration.css"],
+      "run_at": "document_end",
+      "all_frames": false
     }
   ],
-  
+
   "web_accessible_resources": [
     {
       "resources": [
-        "assets/sounds/*.mp3",
-        "assets/sounds/*.wav", 
-        "assets/sounds/*.ogg",
-        "audioStreamProcessor.js"
+        "transcriptionDashboard.html",
+        "popup.html",
+        "settings.html",
+        "styles/*",
+        "assets/sounds/*",
+        "modules/*",
+        "icons/*",
+        "images/*",
+        "integrations/apollo/*",
+        "integrations/salesloft/*"
       ],
       "matches": ["<all_urls>"]
     }
   ],
-  
-  "minimum_chrome_version": "88"
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' wss://api.deepgram.com https://api.deepgram.com https://api.apollo.io https://api.salesloft.com;"
+  },
+
+  "commands": {
+    "toggle-recording": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+R",
+        "mac": "Command+Shift+R"
+      },
+      "description": "Start/stop transcription recording"
+    },
+    "open-dashboard": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+T",
+        "mac": "Command+Shift+T"
+      },
+      "description": "Open transcription dashboard"
+    },
+    "save-to-crm": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Save transcript to CRM"
+    }
+  }
 }
