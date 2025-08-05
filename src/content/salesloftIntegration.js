@@ -329,6 +329,7 @@ class SalesLoftIntegration {
     // ✅ Signal that content script is ready
     chrome.runtime.sendMessage({
       type: 'CONTENT_SCRIPT_READY',
+      script: 'salesloftIntegration',
       context: 'salesloft',
       url: window.location.href,
       timestamp: Date.now()
@@ -347,6 +348,7 @@ class SalesLoftIntegration {
           context: 'salesloft', 
           url: window.location.href,
           ready: true,
+          scriptName: 'salesloftIntegration',
           timestamp: Date.now()
         });
         return false; // Synchronous response, no need to keep port open

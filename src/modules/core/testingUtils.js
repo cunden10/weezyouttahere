@@ -201,6 +201,124 @@ export const testContentScriptReadiness = async () => {
 };
 
 /**
+ * ✅ Check registered content scripts using Chrome API
+ * Usage: checkRegisteredContentScripts()
+ */
+export const checkRegisteredContentScripts = async () => {
+  try {
+    console.log('🔄 Checking registered content scripts...');
+    
+    const response = await chrome.runtime.sendMessage({
+      type: 'CHECK_CONTENT_SCRIPTS'
+    });
+    
+    if (response.success) {
+      console.log(`✅ Found ${response.count} registered content scripts:`);
+      
+      response.scripts.forEach((script, index) => {
+        console.log(`${index + 1}. Script ID: ${script.id || 'unnamed'}`);
+        console.log(`   Matches: ${script.matches?.join(', ') || 'none'}`);
+        console.log(`   Files: ${script.js?.join(', ') || 'none'}`);
+        console.log(`   Run At: ${script.runAt || 'document_idle'}`);
+      });
+      
+      return response.scripts;
+    } else {
+      throw new Error(response.error);
+    }
+  } catch (error) {
+    console.error('❌ Failed to check content scripts:', error);
+    throw error;
+  }
+};
+
+/**
+ * ✅ Check if content script is active in specific tab
+ * Usage: checkContentScriptInTab(tabId)
+ */
+export const checkContentScriptInTab = async (tabId) => {
+  try {
+    console.log(`🔄 Checking content script in tab ${tabId}...`);
+    
+    const response = await chrome.runtime.sendMessage({
+      type: 'CHECK_CONTENT_SCRIPT_ACTIVE',
+      tabId: tabId
+    });
+    
+    if (response.success) {
+      console.log(`${response.active ? '✅' : '❌'} Content script ${response.active ? 'active' : 'inactive'} in tab ${tabId}`);
+      return response.active;
+    } else {
+      throw new Error(response.error);
+    }
+  } catch (error) {
+    console.error(`❌ Failed to check content script in tab ${tabId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * ✅ Inject content script into specific tab
+ * Usage: injectContentScript(tabId, 'salesloft')
+ */
+export const injectContentScript = async (tabId, scriptName) => {
+  try {
+    console.log(`🔄 Injecting ${scriptName} script into tab ${tabId}...`);
+    
+    const response = await chrome.runtime.sendMessage({
+      type: 'INJECT_CONTENT_SCRIPT',
+      tabId: tabId,
+      script: scriptName
+    });
+    
+    if (response.success) {
+      console.log(`✅ Script ${scriptName} injected successfully`);
+      console.log(`   Injection successful: ${response.injected}`);
+      console.log(`   Script active: ${response.active}`);
+      return response;
+    } else {
+      throw new Error(response.error);
+    }
+  } catch (error) {
+    console.error(`❌ Failed to inject ${scriptName} script:`, error);
+    throw error;
+  }
+};
+
+/**
+ * ✅ Auto-inject content script if not active
+ * Usage: autoInjectContentScript('salesloft')
+ */
+export const autoInjectContentScript = async (scriptName) => {
+  try {
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    });
+    
+    if (!tab) {
+      throw new Error('No active tab found');
+    }
+    
+    console.log(`🔄 Checking if ${scriptName} script is active on current tab...`);
+    
+    const isActive = await checkContentScriptInTab(tab.id);
+    
+    if (!isActive) {
+      console.log(`📝 Content script not active, injecting ${scriptName}...`);
+      const result = await injectContentScript(tab.id, scriptName);
+      return { injected: true, ...result };
+    } else {
+      console.log(`✅ Content script already active`);
+      return { injected: false, active: true };
+    }
+  } catch (error) {
+    console.error(`❌ Auto-injection failed:`, error);
+    throw error;
+  }
+};
+
+/**
  * ✅ Comprehensive extension health check
  * Usage: runExtensionHealthCheck()
  */
@@ -273,8 +391,13 @@ if (typeof window !== 'undefined') {
     testSalesLoftAPI,
     testMessagePassing,
     testContentScriptReadiness,
-    runExtensionHealthCheck
+    runExtensionHealthCheck,
+    checkRegisteredContentScripts,
+    checkContentScriptInTab,
+    injectContentScript,
+    autoInjectContentScript
   };
   
   console.log('🧪 Extension testing utilities loaded. Available at window.ExtensionTesting');
+  console.log('📋 New functions: checkRegisteredContentScripts, checkContentScriptInTab, injectContentScript, autoInjectContentScript');
 }

@@ -271,6 +271,7 @@ class ApolloIntegration {
     // ✅ Signal that content script is ready
     chrome.runtime.sendMessage({
       type: 'CONTENT_SCRIPT_READY',
+      script: 'apolloIntegration',
       context: 'apollo',
       url: window.location.href,
       timestamp: Date.now()
@@ -289,6 +290,7 @@ class ApolloIntegration {
           context: 'apollo', 
           url: window.location.href,
           ready: true,
+          scriptName: 'apolloIntegration',
           timestamp: Date.now()
         });
         return false; // Synchronous response

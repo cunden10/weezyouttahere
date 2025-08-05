@@ -182,6 +182,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       handleStopTranscription(sendResponse);
       return true;
       
+    case 'CHECK_CONTENT_SCRIPTS':
+      // ✅ Check registered content scripts using correct API
+      handleCheckContentScripts(sendResponse);
+      return true;
+      
+    case 'CHECK_CONTENT_SCRIPT_ACTIVE':
+      // ✅ Check if content script is active in specific tab
+      handleCheckContentScriptActive(message.tabId, sendResponse);
+      return true;
+      
+    case 'INJECT_CONTENT_SCRIPT':
+      // ✅ Inject content script into specific tab
+      handleInjectContentScript(message.tabId, message.script, sendResponse);
+      return true;
+      
+    case 'CONTENT_SCRIPT_READY':
+      // ✅ Handle content script readiness signals
+      handleContentScriptReady(message, sender, sendResponse);
+      return true;
+      
     default:
       console.warn('[Background] Unknown message type:', message.type);
       sendResponse({ success: false, error: 'Unknown message type' });
@@ -264,6 +284,159 @@ async function handleStopTranscription(sendResponse) {
     sendResponse({ success: true });
   } catch (error) {
     sendResponse({ success: false, error: error.message });
+  }
+}
+
+/**
+ * ✅ Check registered content scripts using correct Chrome API
+ */
+async function handleCheckContentScripts(sendResponse) {
+  try {
+    const scripts = await chrome.scripting.getRegisteredContentScripts();
+    console.log('[Background] Registered content scripts:', scripts.length);
+    
+    // Analyze scripts for debugging
+    const scriptInfo = scripts.map(script => ({
+      id: script.id,
+      matches: script.matches,
+      js: script.js,
+      runAt: script.runAt
+    }));
+    
+    sendResponse({ 
+      success: true, 
+      scripts: scriptInfo,
+      count: scripts.length,
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    console.error('[Background] Failed to get content scripts:', error);
+    sendResponse({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+}
+
+/**
+ * ✅ Check if content script is active in a specific tab
+ */
+async function handleCheckContentScriptActive(tabId, sendResponse) {
+  try {
+    const isActive = await checkContentScriptActive(tabId);
+    sendResponse({ 
+      success: true, 
+      active: isActive,
+      tabId,
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    sendResponse({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+}
+
+/**
+ * ✅ Function to check if content script is active in a tab
+ */
+async function checkContentScriptActive(tabId) {
+  try {
+    const response = await chrome.tabs.sendMessage(tabId, { type: 'PING' });
+    return response && response.success;
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
+ * ✅ Inject content script into specific tab
+ */
+async function handleInjectContentScript(tabId, scriptName, sendResponse) {
+  try {
+    console.log(`[Background] Injecting ${scriptName} into tab ${tabId}`);
+    
+    // Define script paths
+    const scriptPaths = {
+      'salesloft': ['src/content/salesloftIntegration.js'],
+      'apollo': ['src/content/apolloIntegration.js'],
+      'meeting': ['src/content/meetingOverlay.js'],
+      'contentScript': ['src/content/contentScript.js']
+    };
+    
+    const files = scriptPaths[scriptName];
+    if (!files) {
+      throw new Error(`Unknown script: ${scriptName}`);
+    }
+    
+    // Check if tab exists and is ready
+    const tab = await chrome.tabs.get(tabId);
+    if (tab.status !== 'complete' || !tab.url.startsWith('http')) {
+      throw new Error('Tab not ready for script injection');
+    }
+    
+    // Inject the script
+    await chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: files
+    });
+    
+    // Wait a moment for script to initialize
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Verify injection worked
+    const isActive = await checkContentScriptActive(tabId);
+    
+    sendResponse({ 
+      success: true, 
+      injected: true,
+      active: isActive,
+      script: scriptName,
+      tabId,
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    console.error(`[Background] Failed to inject script:`, error);
+    sendResponse({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+}
+
+/**
+ * ✅ Handle content script readiness signals
+ */
+async function handleContentScriptReady(message, sender, sendResponse) {
+  const { script, context, url } = message;
+  const tabId = sender.tab?.id;
+  
+  console.log(`[Background] Content script ready: ${script || context} on tab ${tabId}`);
+  console.log(`[Background] URL: ${url}`);
+  
+  // Store readiness info (could be used for monitoring)
+  try {
+    const readyScripts = await getStorageData('readyContentScripts') || {};
+    readyScripts[tabId] = {
+      script: script || context,
+      url,
+      timestamp: Date.now(),
+      tabId
+    };
+    await setStorageData('readyContentScripts', readyScripts);
+    
+    sendResponse({ 
+      success: true, 
+      acknowledged: true,
+      tabId,
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    sendResponse({ 
+      success: false, 
+      error: error.message 
+    });
   }
 }
 
