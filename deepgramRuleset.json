@@ -1,0 +1,39 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "Authorization",
+          "operation": "set",
+          "value": "Token {apiKey}"
+        }
+      ]
+    },
+    "condition": {
+      "urlFilter": "wss://api.deepgram.com/v1/listen*",
+      "resourceTypes": ["websocket"]
+    }
+  },
+  {
+    "id": 2, 
+    "priority": 2,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "User-Agent",
+          "operation": "set", 
+          "value": "LiveTranscriptionExtension/1.0"
+        }
+      ]
+    },
+    "condition": {
+      "urlFilter": "*://api.deepgram.com/*",
+      "requestMethods": ["get", "post"],
+      "resourceTypes": ["xmlhttprequest", "websocket"]
+    }
+  }
+]
