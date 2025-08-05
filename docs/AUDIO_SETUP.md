@@ -88,42 +88,47 @@ synth.triggerAttackRelease('C5', '0.25s');
 - Maintain attribution list in `SOUND_CREDITS.md` if required
 - Prefer CC0 (public domain) or permissive licenses
 
-## 🔧 Integration with soundManager.js
+## 🔧 Integration with audioNotificationController.js
 
 ### Basic Usage
 ```javascript
-import { playActivationSound, playError } from './soundManager.js';
+import { playNotificationSound } from '../modules/audio/audioNotificationController.js';
 
 // Success feedback
 async function onActivationSuccess() {
-  playActivationSound();
+  await playNotificationSound('activated');
   showActivationStatus('Transcription enabled!');
 }
 
 // Error feedback
-function onActivationError() {
-  playError();
+async function onActivationError() {
+  await playNotificationSound('error');
   showActivationStatus('Failed to activate transcription', 'error');
 }
 ```
 
 ### Advanced Usage
 ```javascript
-import soundManager from './soundManager.js';
+import { loadAudioAssets, playNotificationSound, setMasterVolume } from '../modules/audio/audioNotificationController.js';
 
 // Preload all sounds on page load
 document.addEventListener('DOMContentLoaded', async () => {
-  const loadResult = await soundManager.preloadSounds();
-  console.log(`Loaded ${loadResult.loaded}/${loadResult.total} sounds`);
+  await loadAudioAssets();
+  console.log('All audio assets loaded');
 });
 
-// Sound sequences
-const activationSequence = [
-  { sound: 'confirmBeep', delay: 0 },
-  { sound: 'recStart', delay: 300 },
-  { sound: 'activated', delay: 100 }
-];
-soundManager.playSequence(activationSequence);
+// Volume control and sound sequences
+// Set global volume
+setMasterVolume(0.8);
+
+// Play activation sequence manually
+await playNotificationSound('chime');
+setTimeout(async () => {
+  await playNotificationSound('start');
+  setTimeout(async () => {
+    await playNotificationSound('activated');
+  }, 300);
+}, 100);
 ```
 
 ## 🎯 Implementation Checklist
@@ -131,7 +136,7 @@ soundManager.playSequence(activationSequence);
 - [ ] Create `assets/sounds/` directory
 - [ ] Generate or source all 7 required sound files
 - [ ] Test sound files in target browsers
-- [ ] Implement soundManager.js integration
+- [ ] Implement audioNotificationController.js integration
 - [ ] Add sound preloading to initialization
 - [ ] Test audio permissions and fallbacks
 - [ ] Document any third-party sound attributions

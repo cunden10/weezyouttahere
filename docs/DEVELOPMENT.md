@@ -106,7 +106,7 @@ import { playNotificationSound } from '../audio/audioNotificationController.js';
 
 5. **Audio System** (`src/modules/audio/`)
    - `audioNotificationController.js` - Sound feedback
-   - `soundManager.js` - Audio asset management
+   - `audioNotificationController.js` - Audio asset management and notification sounds
 
 ## 🔧 Development Workflow
 

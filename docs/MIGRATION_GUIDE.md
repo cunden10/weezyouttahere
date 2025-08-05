@@ -20,7 +20,7 @@ OLD STRUCTURE                    →    NEW STRUCTURE
 ├── deepgram-live-transcriber.js →    ├── src/modules/core/deepgramLiveTranscriber.js
 ├── transcriptionSessionManager.js →  ├── src/modules/core/transcriptionSessionManager.js
 ├── audioNotificationController.js →  ├── src/modules/audio/audioNotificationController.js
-├── soundManager.js              →    ├── src/modules/audio/soundManager.js
+├── soundManager.js              →    ├── [CONSOLIDATED INTO audioNotificationController.js]
 ├── notificationController.js    →    ├── src/modules/ui/notificationController.js
 ├── transcriptionDashboard.js    →    ├── src/modules/ui/transcriptionDashboard.js
 ├── scripts/settings.js          →    ├── src/modules/ui/settings.js
