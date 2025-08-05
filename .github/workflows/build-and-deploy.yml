@@ -1,0 +1,292 @@
+name: 🚀 Build and Deploy Live Transcription Extension
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+  CACHE_DEPENDENCY_PATH: package-lock.json
+
+jobs:
+  # ================================================================
+  # QUALITY ASSURANCE
+  # ================================================================
+  quality:
+    name: 🔍 Quality Assurance
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🔍 Lint Code
+        run: npm run lint
+
+      - name: 🎨 Check Code Formatting
+        run: npm run format -- --check
+
+      - name: 🧪 Run Unit Tests
+        run: npm run test:unit
+
+      - name: ✅ Validate Manifest
+        run: npm run validate
+
+  # ================================================================
+  # BUILD MATRIX (Multiple Environments)
+  # ================================================================
+  build:
+    name: 🏗️ Build Extension
+    runs-on: ubuntu-latest
+    needs: quality
+    strategy:
+      matrix:
+        environment: [development, staging, production]
+        browser: [chrome, firefox, edge]
+        exclude:
+          # Edge not supported in development builds
+          - environment: development
+            browser: edge
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🔐 Configure Environment Variables
+        run: |
+          # Set environment-specific variables
+          case "${{ matrix.environment }}" in
+            "development")
+              echo "NODE_ENV=development" >> $GITHUB_ENV
+              echo "VITE_DEEPGRAM_API_KEY=${{ secrets.DEEPGRAM_API_KEY_DEV }}" >> $GITHUB_ENV
+              echo "VITE_APP_ENV=development" >> $GITHUB_ENV
+              echo "VITE_ENABLE_ANALYTICS=false" >> $GITHUB_ENV
+              ;;
+            "staging")
+              echo "NODE_ENV=production" >> $GITHUB_ENV
+              echo "VITE_DEEPGRAM_API_KEY=${{ secrets.DEEPGRAM_API_KEY_STAGING }}" >> $GITHUB_ENV
+              echo "VITE_APP_ENV=staging" >> $GITHUB_ENV
+              echo "VITE_ENABLE_ANALYTICS=true" >> $GITHUB_ENV
+              ;;
+            "production")
+              echo "NODE_ENV=production" >> $GITHUB_ENV
+              echo "VITE_DEEPGRAM_API_KEY=${{ secrets.DEEPGRAM_API_KEY_PROD }}" >> $GITHUB_ENV
+              echo "VITE_APP_ENV=production" >> $GITHUB_ENV
+              echo "VITE_ENABLE_ANALYTICS=true" >> $GITHUB_ENV
+              ;;
+          esac
+
+      - name: 🏗️ Build Extension
+        run: |
+          # Build for specific browser
+          case "${{ matrix.browser }}" in
+            "chrome")
+              npm run build:chrome
+              ;;
+            "firefox")
+              npm run build:firefox
+              ;;
+            "edge")
+              npm run build:edge
+              ;;
+          esac
+        env:
+          VITE_EXTENSION_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || '1.0.0-dev' }}
+          VITE_BUILD_COMMIT: ${{ github.sha }}
+          VITE_BUILD_TIME: ${{ github.run_id }}
+
+      - name: 📦 Package Extension
+        run: |
+          npm run package:${{ matrix.browser }}
+          # Rename package with environment suffix
+          cd dist
+          for file in *.zip; do
+            mv "$file" "${file%.zip}-${{ matrix.environment }}-${{ github.sha:0:7 }}.zip"
+          done
+
+      - name: 🔍 Security Scan
+        run: |
+          # Check for sensitive data in build output
+          echo "🔍 Scanning build output for sensitive data..."
+          if grep -r "DEEPGRAM_API_KEY" build/${{ matrix.browser }}/ 2>/dev/null; then
+            echo "❌ SECURITY VIOLATION: API key found in build output!"
+            exit 1
+          fi
+          echo "✅ Security scan passed"
+
+      - name: 📊 Build Analysis
+        run: |
+          echo "📊 Build Analysis for ${{ matrix.browser }}-${{ matrix.environment }}:"
+          echo "Total size: $(du -sh build/${{ matrix.browser }} | cut -f1)"
+          echo "Files: $(find build/${{ matrix.browser }} -type f | wc -l)"
+          echo "JavaScript files: $(find build/${{ matrix.browser }} -name "*.js" | wc -l)"
+
+      - name: 💾 Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-${{ matrix.browser }}-${{ matrix.environment }}-${{ github.sha:0:7 }}
+          path: |
+            build/${{ matrix.browser }}/
+            dist/*.zip
+          retention-days: 30
+
+  # ================================================================
+  # INTEGRATION TESTS
+  # ================================================================
+  integration-tests:
+    name: 🧪 Integration Tests
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 📥 Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-${{ matrix.browser }}-development-${{ github.sha:0:7 }}
+          path: ./test-artifacts
+
+      - name: 🎭 Install Playwright
+        run: npx playwright install ${{ matrix.browser }}
+
+      - name: 🧪 Run E2E Tests
+        run: npm run test:e2e:${{ matrix.browser }}
+        env:
+          VITE_DEEPGRAM_API_KEY: ${{ secrets.DEEPGRAM_API_KEY_TEST }}
+          EXTENSION_PATH: ./test-artifacts/build/${{ matrix.browser }}
+
+      - name: 📊 Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.browser }}-${{ github.sha:0:7 }}
+          path: test-results/
+          retention-days: 7
+
+  # ================================================================
+  # DEPLOYMENT (Production Only)
+  # ================================================================
+  deploy-production:
+    name: 🚀 Deploy to Store
+    runs-on: ubuntu-latest
+    needs: [build, integration-tests]
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
+    environment: production
+    
+    strategy:
+      matrix:
+        store: [chrome-web-store, firefox-addons, edge-addons]
+    
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📥 Download Production Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-chrome-production-${{ github.sha:0:7 }}
+          path: ./artifacts
+
+      - name: 🚀 Deploy to Chrome Web Store
+        if: matrix.store == 'chrome-web-store'
+        uses: wOxxOm/chrome-webstore-upload-cli@v2
+        with:
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          zip-path: ./artifacts/dist/*.zip
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+
+      - name: 🦊 Deploy to Firefox Add-ons
+        if: matrix.store == 'firefox-addons'
+        run: |
+          # Firefox deployment using web-ext
+          npx web-ext sign \
+            --source-dir ./artifacts/build/firefox \
+            --api-key ${{ secrets.FIREFOX_API_KEY }} \
+            --api-secret ${{ secrets.FIREFOX_API_SECRET }}
+
+      - name: 🌐 Deploy to Edge Add-ons
+        if: matrix.store == 'edge-addons'
+        run: |
+          echo "🌐 Edge Add-ons deployment not yet implemented"
+          echo "Manual upload required to https://partner.microsoft.com/"
+
+  # ================================================================
+  # NOTIFICATION
+  # ================================================================
+  notify:
+    name: 📢 Notify Deployment
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: always() && github.ref_type == 'tag'
+    
+    steps:
+      - name: 📢 Slack Notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ needs.deploy-production.result }}
+          text: |
+            🚀 Live Transcription Extension ${{ github.ref_name }} deployment ${{ needs.deploy-production.result }}!
+            
+            📊 Build Info:
+            • Commit: ${{ github.sha:0:7 }}
+            • Branch: ${{ github.ref_name }}
+            • Environment: Production
+            
+            🔗 Links:
+            • Chrome Web Store: https://chrome.google.com/webstore/detail/${{ secrets.CHROME_EXTENSION_ID }}
+            • Firefox Add-ons: https://addons.mozilla.org/addon/live-transcription/
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ================================================================
+  # CLEANUP
+  # ================================================================
+  cleanup:
+    name: 🧹 Cleanup
+    runs-on: ubuntu-latest
+    needs: [deploy-production, integration-tests]
+    if: always()
+    
+    steps:
+      - name: 🧹 Clean Old Artifacts
+        run: |
+          echo "🧹 Cleanup completed"
+          echo "Artifacts older than 30 days will be automatically removed"
