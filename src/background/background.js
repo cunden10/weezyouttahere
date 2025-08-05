@@ -320,17 +320,63 @@ chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
 /* 🔧  Utility Functions                                             */
 /* ------------------------------------------------------------------ */
 
-// Send message to all tabs
-async function broadcastToTabs(message) {
+/**
+ * ✅ IMPROVED: Send message to tab with proper error handling
+ * @param {number} tabId - Tab ID to send message to
+ * @param {Object} message - Message to send
+ * @returns {Promise<Object|null>} Response or null if failed
+ */
+async function sendMessageSafely(tabId, message) {
   try {
-    const tabs = await chrome.tabs.query({});
-    tabs.forEach(tab => {
-      chrome.tabs.sendMessage(tab.id, message).catch(() => {
-        // Ignore errors for tabs that can't receive messages
+    // Check if tab exists and is ready
+    const tab = await chrome.tabs.get(tabId);
+    
+    if (tab.status === 'complete' && tab.url.startsWith('http')) {
+      const response = await chrome.tabs.sendMessage(tabId, message);
+      return response;
+    } else {
+      console.log(`[Background] Tab ${tabId} not ready:`, {
+        status: tab.status,
+        url: tab.url.substring(0, 50) + '...'
       });
-    });
+      return null;
+    }
+  } catch (error) {
+    // Handle the lastError gracefully
+    if (chrome.runtime.lastError) {
+      console.log('[Background] Message sending failed:', chrome.runtime.lastError.message);
+    }
+    console.log(`[Background] Failed to send message to tab ${tabId}:`, error.message);
+    return null;
+  }
+}
+
+/**
+ * ✅ IMPROVED: Send message to all tabs with better error handling
+ * @param {Object} message - Message to broadcast
+ * @param {Object} options - Broadcast options
+ */
+async function broadcastToTabs(message, options = {}) {
+  try {
+    const queryOptions = {
+      url: options.urlPattern || ['https://*/*', 'http://*/*'],
+      ...options.tabQuery
+    };
+    
+    const tabs = await chrome.tabs.query(queryOptions);
+    console.log(`[Background] Broadcasting to ${tabs.length} tabs:`, message.type);
+    
+    const results = await Promise.allSettled(
+      tabs.map(tab => sendMessageSafely(tab.id, message))
+    );
+    
+    const successful = results.filter(r => r.status === 'fulfilled' && r.value !== null).length;
+    console.log(`[Background] Broadcast completed: ${successful}/${tabs.length} successful`);
+    
+    return { successful, total: tabs.length };
   } catch (error) {
     console.error('[Background] Failed to broadcast message:', error);
+    return { successful: 0, total: 0 };
   }
 }
 

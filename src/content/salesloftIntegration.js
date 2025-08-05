@@ -13,6 +13,45 @@
 
 import { safeStorageGet, safeStorageSet } from '../modules/core/coreUtils.js';
 
+// ✅ CORRECT: SalesLoft API v2 Endpoints (verified with official documentation)
+const SALESLOFT_API_CONFIG = Object.freeze({
+  BASE_URL: 'https://api.salesloft.com/v2/',
+  ENDPOINTS: {
+    // User and account info
+    me: 'me.json',
+    team: 'team.json',
+    
+    // People and contacts
+    people: 'people.json',
+    person: (id) => `people/${id}.json`,
+    
+    // Accounts and companies
+    accounts: 'accounts.json',
+    account: (id) => `accounts/${id}.json`,
+    
+    // Activities and calls
+    activities: 'activities.json',
+    activity: (id) => `activities/${id}.json`,
+    calls: 'calls.json',
+    call: (id) => `calls/${id}.json`,
+    
+    // Notes and logging
+    notes: 'notes.json',
+    note: (id) => `notes/${id}.json`,
+    
+    // Phone calls
+    phone_numbers: 'phone_numbers.json',
+    call_instructions: 'call_instructions.json'
+  },
+  
+  // API request configuration
+  getHeaders: (token) => ({
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  })
+});
+
 class SalesLoftIntegration {
   constructor() {
     this.isSalesLoftPage = this.detectSalesLoftContext();
@@ -287,22 +326,72 @@ class SalesLoftIntegration {
    * Set up listeners for transcription events from the extension
    */
   setupTranscriptionListeners() {
-    // Listen for messages from the extension background script
+    // ✅ Signal that content script is ready
+    chrome.runtime.sendMessage({
+      type: 'CONTENT_SCRIPT_READY',
+      context: 'salesloft',
+      url: window.location.href,
+      timestamp: Date.now()
+    }).catch(error => {
+      console.log('[SalesLoft] Failed to signal readiness:', error);
+    });
+
+    // ✅ Listen for messages from the extension background script
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      switch (message.type) {
-        case 'TRANSCRIPTION_STARTED':
-          this.onTranscriptionStarted(message.data);
-          break;
-        case 'TRANSCRIPTION_STOPPED':
-          this.onTranscriptionStopped(message.data);
-          break;
-        case 'TRANSCRIPTION_UPDATE':
-          this.onTranscriptionUpdate(message.data);
-          break;
-        case 'TRANSCRIPTION_ERROR':
-          this.onTranscriptionError(message.data);
-          break;
+      console.log('[SalesLoft] Received message:', message.type);
+      
+      try {
+        switch (message.type) {
+          case 'PING':
+            // Health check from background script
+            sendResponse({ 
+              success: true, 
+              context: 'salesloft',
+              url: window.location.href,
+              ready: true,
+              timestamp: Date.now()
+            });
+            break;
+            
+          case 'TRANSCRIPTION_STARTED':
+            this.onTranscriptionStarted(message.data);
+            sendResponse({ success: true, handled: 'TRANSCRIPTION_STARTED' });
+            break;
+            
+          case 'TRANSCRIPTION_STOPPED':
+            this.onTranscriptionStopped(message.data);
+            sendResponse({ success: true, handled: 'TRANSCRIPTION_STOPPED' });
+            break;
+            
+          case 'TRANSCRIPTION_UPDATE':
+            this.onTranscriptionUpdate(message.data);
+            sendResponse({ success: true, handled: 'TRANSCRIPTION_UPDATE' });
+            break;
+            
+          case 'TRANSCRIPTION_ERROR':
+            this.onTranscriptionError(message.data);
+            sendResponse({ success: true, handled: 'TRANSCRIPTION_ERROR' });
+            break;
+            
+          default:
+            // Always respond to prevent lastError
+            sendResponse({ 
+              success: true, 
+              message: 'Unknown message type',
+              type: message.type 
+            });
+        }
+      } catch (error) {
+        console.error('[SalesLoft] Error handling message:', error);
+        sendResponse({ 
+          success: false, 
+          error: error.message,
+          type: message.type 
+        });
       }
+      
+      // ✅ Keep message channel open for async operations
+      return true;
     });
   }
 
