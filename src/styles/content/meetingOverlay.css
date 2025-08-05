@@ -1,0 +1,452 @@
+/* ======================================================================= 
+ * meetingOverlay.css
+ * ----------------------------------------------------------------------- 
+ * Styles for the meeting platform overlay component
+ * Designed to work seamlessly across Google Meet, Zoom, Teams
+ * ======================================================================= */
+
+.meeting-overlay {
+  position: fixed;
+  z-index: 2147483647; /* Maximum z-index */
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #1f2937;
+  min-width: 320px;
+  max-width: 480px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.meeting-overlay.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Position variants */
+.meeting-overlay--bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+.meeting-overlay--bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+.meeting-overlay--top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.meeting-overlay--top-left {
+  top: 20px;
+  left: 20px;
+}
+
+/* Size variants */
+.meeting-overlay[data-size="small"] {
+  min-width: 280px;
+  max-width: 380px;
+}
+
+.meeting-overlay[data-size="large"] {
+  min-width: 400px;
+  max-width: 600px;
+}
+
+/* Minimized state */
+.meeting-overlay.minimized .meeting-overlay__content,
+.meeting-overlay.minimized .meeting-overlay__footer {
+  display: none;
+}
+
+.meeting-overlay.minimized {
+  min-width: auto;
+  width: auto;
+}
+
+/* Header */
+.meeting-overlay__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: grab;
+  user-select: none;
+}
+
+.meeting-overlay__header:active {
+  cursor: grabbing;
+}
+
+.meeting-overlay__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.meeting-overlay__icon {
+  font-size: 16px;
+}
+
+.meeting-overlay__text {
+  font-size: 13px;
+}
+
+.meeting-overlay__controls {
+  display: flex;
+  gap: 4px;
+}
+
+.meeting-overlay__btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.meeting-overlay__btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #374151;
+}
+
+.meeting-overlay__btn--record {
+  color: #dc2626;
+}
+
+.meeting-overlay__btn--record.recording {
+  background: #dc2626;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.meeting-overlay__btn--close:hover {
+  background: #dc2626;
+  color: white;
+}
+
+/* Content */
+.meeting-overlay__content {
+  padding: 16px;
+}
+
+.meeting-overlay__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9ca3af;
+  transition: all 0.3s ease;
+}
+
+.status-dot--recording {
+  background: #dc2626;
+  animation: pulse 2s infinite;
+}
+
+.status-dot--error {
+  background: #dc2626;
+}
+
+.status-dot--success {
+  background: #059669;
+}
+
+.status-text {
+  font-weight: 500;
+}
+
+.meeting-overlay__transcript {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 120px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.transcript-placeholder {
+  color: #9ca3af;
+  font-style: italic;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.meeting-overlay__interim {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #92400e;
+  font-style: italic;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.meeting-overlay__interim:empty {
+  display: none;
+}
+
+/* Footer */
+.meeting-overlay__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 0 0 12px 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.meeting-overlay__stats {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.meeting-overlay__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(37, 99, 235, 0.1);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.action-btn:hover {
+  background: rgba(37, 99, 235, 0.2);
+  transform: translateY(-1px);
+}
+
+.action-btn:active {
+  transform: translateY(0);
+}
+
+/* Error display */
+.meeting-overlay__error {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #dc2626;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 0 0 8px 8px;
+  font-size: 12px;
+  animation: slideDown 0.3s ease;
+  z-index: 10;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Platform-specific adjustments */
+.meeting-overlay--google-meet {
+  /* Adjust for Google Meet UI */
+}
+
+.meeting-overlay--zoom {
+  /* Adjust for Zoom UI */
+}
+
+.meeting-overlay--teams {
+  /* Adjust for Microsoft Teams UI */
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .meeting-overlay {
+    background: rgba(31, 41, 55, 0.95);
+    color: #f3f4f6;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .meeting-overlay__header {
+    background: rgba(37, 99, 235, 0.2);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .meeting-overlay__title {
+    color: #f3f4f6;
+  }
+
+  .meeting-overlay__btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #d1d5db;
+  }
+
+  .meeting-overlay__btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #f3f4f6;
+  }
+
+  .meeting-overlay__transcript {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f3f4f6;
+  }
+
+  .transcript-placeholder {
+    color: #9ca3af;
+  }
+
+  .meeting-overlay__interim {
+    background: #451a03;
+    border-color: #92400e;
+    color: #fbbf24;
+  }
+
+  .meeting-overlay__footer {
+    background: rgba(255, 255, 255, 0.05);
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .meeting-overlay__stats {
+    color: #d1d5db;
+  }
+
+  .action-btn {
+    background: rgba(37, 99, 235, 0.2);
+  }
+
+  .action-btn:hover {
+    background: rgba(37, 99, 235, 0.3);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .meeting-overlay {
+    min-width: 280px;
+    max-width: calc(100vw - 40px);
+  }
+
+  .meeting-overlay--bottom-right,
+  .meeting-overlay--bottom-left {
+    bottom: 10px;
+  }
+
+  .meeting-overlay--bottom-right {
+    right: 10px;
+  }
+
+  .meeting-overlay--bottom-left {
+    left: 10px;
+  }
+
+  .meeting-overlay--top-right,
+  .meeting-overlay--top-left {
+    top: 10px;
+  }
+
+  .meeting-overlay--top-right {
+    right: 10px;
+  }
+
+  .meeting-overlay--top-left {
+    left: 10px;
+  }
+
+  .meeting-overlay__transcript {
+    max-height: 150px;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .meeting-overlay {
+    border: 2px solid #000;
+    background: #fff;
+  }
+
+  .meeting-overlay__btn {
+    border: 1px solid #000;
+  }
+
+  .meeting-overlay__transcript {
+    border: 2px solid #000;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .meeting-overlay,
+  .meeting-overlay__btn,
+  .action-btn,
+  .status-dot {
+    transition: none;
+    animation: none;
+  }
+
+  .meeting-overlay__btn--record.recording {
+    animation: none;
+  }
+
+  .status-dot--recording {
+    animation: none;
+  }
+}

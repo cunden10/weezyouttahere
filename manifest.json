@@ -12,7 +12,8 @@
     "tabs",
     "activeTab",
     "scripting",
-    "action"
+    "action",
+    "declarativeNetRequest"
   ],
 
   "host_permissions": [
@@ -53,6 +54,16 @@
   "options_ui": {
     "page": "src/pages/settings.html",
     "open_in_tab": true
+  },
+
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "deepgram_rules",
+        "enabled": true,
+        "path": "config/deepgramRuleset.json"
+      }
+    ]
   },
 
   "content_scripts": [

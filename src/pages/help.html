@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help - Live Transcription Extension</title>
+  <link rel="stylesheet" href="../styles/common/base.css" />
+  <link rel="stylesheet" href="../styles/pages/help.css" />
+</head>
+<body>
+  <div class="help-container">
+    <!-- Header -->
+    <header class="help-header">
+      <h1>Live Transcription Help</h1>
+      <nav class="help-nav">
+        <button class="nav-btn active" data-section="getting-started">Getting Started</button>
+        <button class="nav-btn" data-section="features">Features</button>
+        <button class="nav-btn" data-section="troubleshooting">Troubleshooting</button>
+        <button class="nav-btn" data-section="privacy">Privacy</button>
+        <button class="nav-btn" data-section="support">Support</button>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="help-content">
+      <!-- Getting Started Section -->
+      <section id="getting-started" class="help-section active">
+        <h2>Getting Started</h2>
+        
+        <div class="help-card">
+          <h3>🎙️ Setting Up Your Microphone</h3>
+          <ol>
+            <li>Click the extension icon in your browser toolbar</li>
+            <li>Select "Grant Microphone Permission" when prompted</li>
+            <li>Choose your preferred microphone from the dropdown</li>
+            <li>Test your setup by clicking "Start Recording"</li>
+          </ol>
+        </div>
+
+        <div class="help-card">
+          <h3>🚀 First Transcription</h3>
+          <ol>
+            <li>Open the dashboard by clicking the extension icon</li>
+            <li>Click "Start Recording" to begin live transcription</li>
+            <li>Speak clearly into your microphone</li>
+            <li>Watch as your speech appears as text in real-time</li>
+            <li>Click "Stop Recording" when finished</li>
+          </ol>
+        </div>
+
+        <div class="help-card">
+          <h3>⚙️ Configuring Settings</h3>
+          <ul>
+            <li><strong>Language:</strong> Choose your spoken language for better accuracy</li>
+            <li><strong>Model:</strong> Select Nova 2 for the latest AI model</li>
+            <li><strong>Punctuation:</strong> Enable automatic punctuation insertion</li>
+            <li><strong>Interim Results:</strong> See words as you speak (before final processing)</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section id="features" class="help-section">
+        <h2>Features Overview</h2>
+        
+        <div class="help-card">
+          <h3>🎯 Real-Time Transcription</h3>
+          <p>Experience live speech-to-text conversion powered by Deepgram's advanced AI models. See your words appear instantly as you speak with high accuracy across multiple languages.</p>
+          <ul>
+            <li>Ultra-low latency transcription</li>
+            <li>Support for 30+ languages</li>
+            <li>Automatic punctuation and capitalization</li>
+            <li>Technical terminology recognition</li>
+          </ul>
+        </div>
+
+        <div class="help-card">
+          <h3>💼 Meeting Integration</h3>
+          <p>Seamlessly integrate with popular video conferencing platforms:</p>
+          <ul>
+            <li><strong>Google Meet:</strong> Automatic overlay on meeting pages</li>
+            <li><strong>Zoom:</strong> Compatible with desktop and web versions</li>
+            <li><strong>Microsoft Teams:</strong> Enterprise-ready integration</li>
+            <li><strong>Capture System Audio:</strong> Transcribe other participants</li>
+          </ul>
+        </div>
+
+        <div class="help-card">
+          <h3>📊 CRM Integration</h3>
+          <p>Export transcripts directly to your sales tools:</p>
+          <ul>
+            <li><strong>Apollo.io:</strong> Auto-save call notes and action items</li>
+            <li><strong>SalesLoft:</strong> Integrate with cadences and sequences</li>
+            <li><strong>Custom Export:</strong> JSON, SRT, and plain text formats</li>
+          </ul>
+        </div>
+
+        <div class="help-card">
+          <h3>⌨️ Keyboard Shortcuts</h3>
+          <table class="shortcuts-table">
+            <tr>
+              <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></td>
+              <td>Toggle recording on/off</td>
+            </tr>
+            <tr>
+              <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>D</kbd></td>
+              <td>Open dashboard</td>
+            </tr>
+            <tr>
+              <td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></td>
+              <td>Save transcript to CRM</td>
+            </tr>
+            <tr>
+              <td><kbd>Ctrl</kbd> + <kbd>C</kbd></td>
+              <td>Copy transcript (in dashboard)</td>
+            </tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- Troubleshooting Section -->
+      <section id="troubleshooting" class="help-section">
+        <h2>Troubleshooting</h2>
+        
+        <div class="help-card">
+          <h3>🔇 Microphone Issues</h3>
+          <div class="problem-solution">
+            <p><strong>Problem:</strong> "Microphone permission denied" or no audio detected</p>
+            <p><strong>Solution:</strong></p>
+            <ol>
+              <li>Check browser permissions: Click the 🔒 icon in the address bar</li>
+              <li>Ensure microphone access is allowed for this site</li>
+              <li>Try refreshing the page and granting permission again</li>
+              <li>Check system microphone settings and ensure it's not muted</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-card">
+          <h3>🔌 Connection Problems</h3>
+          <div class="problem-solution">
+            <p><strong>Problem:</strong> "Connection failed" or frequent disconnections</p>
+            <p><strong>Solution:</strong></p>
+            <ol>
+              <li>Check your internet connection stability</li>
+              <li>Disable VPN or proxy temporarily</li>
+              <li>Try refreshing the page</li>
+              <li>Contact support if issues persist</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-card">
+          <h3>📝 Transcription Accuracy</h3>
+          <div class="problem-solution">
+            <p><strong>Problem:</strong> Poor transcription quality or errors</p>
+            <p><strong>Solution:</strong></p>
+            <ol>
+              <li>Speak clearly and at a moderate pace</li>
+              <li>Reduce background noise when possible</li>
+              <li>Select the correct language in settings</li>
+              <li>Use a high-quality microphone if available</li>
+              <li>Ensure stable internet connection</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="help-card">
+          <h3>⚡ Performance Issues</h3>
+          <div class="problem-solution">
+            <p><strong>Problem:</strong> Slow or laggy transcription</p>
+            <p><strong>Solution:</strong></p>
+            <ol>
+              <li>Close unnecessary browser tabs</li>
+              <li>Check available system memory</li>
+              <li>Disable other extensions temporarily</li>
+              <li>Try using a different browser</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- Privacy Section -->
+      <section id="privacy" class="help-section">
+        <h2>Privacy & Security</h2>
+        
+        <div class="help-card">
+          <h3>🔐 Data Protection</h3>
+          <p>Your privacy is our top priority. Here's how we protect your data:</p>
+          <ul>
+            <li><strong>End-to-End Encryption:</strong> All audio data is encrypted in transit</li>
+            <li><strong>No Storage:</strong> Audio is processed in real-time and not stored</li>
+            <li><strong>Local Processing:</strong> Interim results are processed locally</li>
+            <li><strong>Secure API:</strong> Direct connection to Deepgram's certified servers</li>
+          </ul>
+        </div>
+
+        <div class="help-card">
+          <h3>🛡️ What We Collect</h3>
+          <ul>
+            <li><strong>Audio Streams:</strong> Temporarily processed for transcription only</li>
+            <li><strong>Usage Analytics:</strong> Anonymous usage statistics (optional)</li>
+            <li><strong>Error Logs:</strong> Diagnostic information for improving service</li>
+            <li><strong>Settings:</strong> Your preferences stored locally in your browser</li>
+          </ul>
+        </div>
+
+        <div class="help-card">
+          <h3>👤 Your Rights</h3>
+          <ul>
+            <li>Disable analytics in extension settings</li>
+            <li>Clear all stored data by uninstalling the extension</li>
+            <li>Request data deletion by contacting support</li>
+            <li>Review our full privacy policy</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Support Section -->
+      <section id="support" class="help-section">
+        <h2>Support & Contact</h2>
+        
+        <div class="help-card">
+          <h3>📧 Get Help</h3>
+          <p>Need additional assistance? We're here to help!</p>
+          <div class="support-options">
+            <a href="mailto:support@livetranscription.com" class="support-btn">
+              <span class="support-icon">📧</span>
+              <span>Email Support</span>
+            </a>
+            <a href="#" class="support-btn" id="export-logs-btn">
+              <span class="support-icon">📋</span>
+              <span>Export Debug Logs</span>
+            </a>
+            <a href="#" class="support-btn" id="reset-extension-btn">
+              <span class="support-icon">🔄</span>
+              <span>Reset Extension</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="help-card">
+          <h3>🐛 Report Issues</h3>
+          <p>Help us improve by reporting bugs or suggesting features:</p>
+          <form class="feedback-form" id="feedback-form">
+            <textarea 
+              placeholder="Describe the issue or suggestion..."
+              rows="4"
+              id="feedback-text"
+              required
+            ></textarea>
+            <div class="form-actions">
+              <label class="checkbox-label">
+                <input type="checkbox" id="include-logs" />
+                Include diagnostic information
+              </label>
+              <button type="submit" class="submit-btn">Send Feedback</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="help-card">
+          <h3>ℹ️ Extension Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Version:</span>
+              <span class="info-value" id="extension-version">1.0.0</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Last Updated:</span>
+              <span class="info-value" id="last-updated">Loading...</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">API Status:</span>
+              <span class="info-value" id="api-status">Checking...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="help-footer">
+      <div class="footer-links">
+        <a href="../pages/dashboard.html">Dashboard</a>
+        <a href="../pages/settings.html">Settings</a>
+        <a href="#" id="privacy-policy-link">Privacy Policy</a>
+        <a href="#" id="terms-link">Terms of Service</a>
+      </div>
+      <p class="footer-text">
+        © 2024 Live Transcription Extension. All rights reserved.
+      </p>
+    </footer>
+  </div>
+
+  <!-- Load help page controller -->
+  <script type="module" src="../modules/ui/help.js"></script>
+</body>
+</html>
