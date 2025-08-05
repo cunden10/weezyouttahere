@@ -7,12 +7,10 @@
   "minimum_chrome_version": "116",
 
   "permissions": [
-    "microphone",
     "storage",
     "tabs",
     "activeTab",
     "scripting",
-    "action",
     "declarativeNetRequest"
   ],
 
@@ -28,8 +26,7 @@
   ],
 
   "background": {
-    "service_worker": "src/background/background.js",
-    "type": "module"
+    "service_worker": "src/background/background.js"
   },
 
   "action": {
