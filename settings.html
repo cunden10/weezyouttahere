@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Transcription Settings</title>
+  <link rel="stylesheet" href="styles/settings.css" />
+</head>
+<body>
+  <main class="extension-settings" role="main">
+    
+    <!-- Header Section -->
+    <header class="settings-header">
+      <h1>Live Transcription Settings</h1>
+      <p class="settings-description">
+        Configure your transcription preferences and notification settings.
+      </p>
+    </header>
+
+    <!-- Transcription Configuration -->
+    <section class="settings-section">
+      <h2>Transcription</h2>
+      
+      <div class="setting-group">
+        <label for="transcript-language" class="setting-label">
+          Language
+        </label>
+        <select id="transcript-language" class="setting-control">
+          <option value="en-US">English (United States)</option>
+          <option value="en-GB">English (United Kingdom)</option>
+          <option value="en-AU">English (Australia)</option>
+          <option value="es-ES">Spanish (Spain)</option>
+          <option value="es-MX">Spanish (Mexico)</option>
+          <option value="fr-FR">French (France)</option>
+          <option value="fr-CA">French (Canada)</option>
+          <option value="de-DE">German</option>
+          <option value="it-IT">Italian</option>
+          <option value="pt-BR">Portuguese (Brazil)</option>
+          <option value="ja-JP">Japanese</option>
+          <option value="ko-KR">Korean</option>
+          <option value="zh-CN">Chinese (Simplified)</option>
+        </select>
+        <small class="setting-hint">
+          Choose the primary language for transcription accuracy
+        </small>
+      </div>
+
+      <div class="setting-group">
+        <label for="transcript-model" class="setting-label">
+          Model
+        </label>
+        <select id="transcript-model" class="setting-control">
+          <option value="nova-2">Nova 2 (Latest - Recommended)</option>
+          <option value="nova">Nova (Standard)</option>
+          <option value="enhanced">Enhanced (Legacy)</option>
+          <option value="base">Base (Fastest)</option>
+        </select>
+        <small class="setting-hint">
+          Higher quality models may have slightly increased latency
+        </small>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-checkbox">
+          <input type="checkbox" id="punctuation-enabled" checked />
+          <span class="checkbox-label">Enable punctuation</span>
+        </label>
+        <small class="setting-hint">
+          Automatically add punctuation to transcriptions
+        </small>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-checkbox">
+          <input type="checkbox" id="interim-results-enabled" checked />
+          <span class="checkbox-label">Show interim results</span>
+        </label>
+        <small class="setting-hint">
+          Display partial transcriptions as you speak (real-time preview)
+        </small>
+      </div>
+    </section>
+
+    <!-- Notification & Feedback Settings -->
+    <section class="settings-section">
+      <h2>Notifications & Feedback</h2>
+      
+      <div class="setting-group">
+        <label class="setting-checkbox">
+          <input type="checkbox" id="toast-notifications-enabled" checked />
+          <span class="checkbox-label">Show popup notifications</span>
+        </label>
+        <small class="setting-hint">
+          Display status messages and alerts as overlay toasts
+        </small>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-checkbox">
+          <input type="checkbox" id="sound-feedback-enabled" checked />
+          <span class="checkbox-label">Play audio feedback</span>
+        </label>
+        <small class="setting-hint">
+          Play notification sounds for recording start/stop and errors
+        </small>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-checkbox">
+          <input type="checkbox" id="browser-notifications-enabled" />
+          <span class="checkbox-label">Enable browser notifications</span>
+        </label>
+        <small class="setting-hint">
+          Show system notifications when the extension is not active
+        </small>
+      </div>
+    </section>
+
+    <!-- Behavior Settings -->
+    <section class="settings-section">
+      <h2>Behavior</h2>
+      
+      <div class="setting-group">
+        <label class="setting-checkbox">
+          <input type="checkbox" id="auto-start-enabled" />
+          <span class="checkbox-label">Auto-start transcription</span>
+        </label>
+        <small class="setting-hint">
+          Automatically begin transcription when opening supported meeting sites
+        </small>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-checkbox">
+          <input type="checkbox" id="auto-save-enabled" checked />
+          <span class="checkbox-label">Auto-save transcripts</span>
+        </label>
+        <small class="setting-hint">
+          Automatically save completed transcription sessions
+        </small>
+      </div>
+
+      <div class="setting-group">
+        <label for="auto-stop-duration" class="setting-label">
+          Auto-stop after silence
+        </label>
+        <select id="auto-stop-duration" class="setting-control">
+          <option value="0">Never</option>
+          <option value="30">30 seconds</option>
+          <option value="60">1 minute</option>
+          <option value="120">2 minutes</option>
+          <option value="300">5 minutes</option>
+        </select>
+        <small class="setting-hint">
+          Automatically stop recording after detecting silence
+        </small>
+      </div>
+    </section>
+
+    <!-- Appearance & Privacy -->
+    <section class="settings-section">
+      <h2>Appearance & Privacy</h2>
+      
+      <div class="setting-group">
+        <label for="ui-theme" class="setting-label">
+          Theme
+        </label>
+        <select id="ui-theme" class="setting-control">
+          <option value="auto">Auto (System)</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+        <small class="setting-hint">
+          Choose your preferred interface theme
+        </small>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-checkbox">
+          <input type="checkbox" id="analytics-enabled" checked />
+          <span class="checkbox-label">Anonymous usage analytics</span>
+        </label>
+        <small class="setting-hint">
+          Help improve the extension by sharing anonymous usage data
+        </small>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-checkbox">
+          <input type="checkbox" id="error-reporting-enabled" checked />
+          <span class="checkbox-label">Automatic error reporting</span>
+        </label>
+        <small class="setting-hint">
+          Automatically report crashes and errors to improve stability
+        </small>
+      </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="settings-actions">
+      <button id="save-settings-btn" class="primary-button">
+        Save Settings
+      </button>
+      
+      <button id="reset-settings-btn" class="secondary-button">
+        Reset to Defaults
+      </button>
+      
+      <button id="export-settings-btn" class="secondary-button">
+        Export Settings
+      </button>
+    </section>
+
+    <!-- Feedback Area -->
+    <div id="settings-feedback" 
+         class="settings-feedback" 
+         aria-live="polite" 
+         role="status">
+    </div>
+
+    <!-- Extension Info -->
+    <footer class="settings-footer">
+      <div class="extension-info">
+        <p><strong>Live Transcription Extension</strong> v1.0.0</p>
+        <p>Powered by Deepgram's real-time speech recognition</p>
+        <div class="info-links">
+          <a href="#" id="privacy-policy-link">Privacy Policy</a>
+          <a href="#" id="support-link">Support</a>
+          <a href="#" id="feedback-link">Send Feedback</a>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Load settings controller -->
+  <script type="module" src="scripts/settings.js"></script>
+</body>
+</html>
