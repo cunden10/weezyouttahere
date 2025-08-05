@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enable Live Transcription</title>
+
+  <!-- Custom activation styles -->
+  <link rel="stylesheet" href="activationStyles.css" />
+</head>
+<body>
+  <main class="activate-container" role="main">
+    <h1 id="page-title">Live Transcription Setup</h1>
+    <p class="page-description">
+      Click the button below to grant microphone access and start real-time transcription
+      directly in your browser.
+    </p>
+
+    <!-- Activation button (Deepgram key can be injected or set via data attribute) -->
+    <button
+      class="activate-feature-btn"
+      id="activate-btn"
+      data-deepgram-key=""
+      aria-describedby="activation-status"
+    >
+      Activate Transcription
+    </button>
+
+    <!-- Status area for success/error/progress messages -->
+    <p
+      id="activation-status"
+      data-role="activation-status"
+      aria-live="polite"
+      class="status-message"
+    ></p>
+  </main>
+
+  <!-- Activation logic -->
+  <script type="module" src="featureActivation.js"></script>
+</body>
+</html>
