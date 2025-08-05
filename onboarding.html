@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Live Transcription</title>
+  <link rel="stylesheet" href="styles/onboarding.css" />
+</head>
+<body>
+  <div class="onboarding-container">
+    
+    <!-- Step 1: Welcome & Introduction -->
+    <section class="onboarding-step" id="step-welcome" data-step="1">
+      <div class="onboarding-content">
+        <div class="onboarding-icon">
+          🎙️
+        </div>
+        
+        <h1 class="onboarding-title">Welcome to Live Transcription!</h1>
+        
+        <p class="onboarding-subtitle">
+          Transform your voice into accurate, real-time text with the power of AI
+        </p>
+        
+        <div class="feature-highlights">
+          <div class="feature-item">
+            <span class="feature-icon">⚡</span>
+            <div class="feature-text">
+              <strong>Instant Results</strong>
+              <small>See your words appear as you speak</small>
+            </div>
+          </div>
+          
+          <div class="feature-item">
+            <span class="feature-icon">🔒</span>
+            <div class="feature-text">
+              <strong>Private & Secure</strong>
+              <small>Audio processed in real-time, never stored</small>
+            </div>
+          </div>
+          
+          <div class="feature-item">
+            <span class="feature-icon">🌍</span>
+            <div class="feature-text">
+              <strong>Multi-Language</strong>
+              <small>Supports 12+ languages with high accuracy</small>
+            </div>
+          </div>
+          
+          <div class="feature-item">
+            <span class="feature-icon">🔧</span>
+            <div class="feature-text">
+              <strong>Zero Setup</strong>
+              <small>No API keys or technical configuration required</small>
+            </div>
+          </div>
+        </div>
+        
+        <div class="onboarding-actions">
+          <button class="primary-button" id="welcome-continue-btn">
+            Get Started
+          </button>
+          
+          <button class="text-button" id="skip-onboarding-btn">
+            Skip Setup
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2: Privacy & Data Handling -->
+    <section class="onboarding-step hidden" id="step-privacy" data-step="2">
+      <div class="onboarding-content">
+        <div class="onboarding-icon">
+          🛡️
+        </div>
+        
+        <h2 class="onboarding-title">Your Privacy Matters</h2>
+        
+        <p class="onboarding-description">
+          We've designed this extension with privacy as a core principle. Here's exactly how your data is handled:
+        </p>
+        
+        <div class="privacy-points">
+          <div class="privacy-point">
+            <div class="privacy-icon">✅</div>
+            <div class="privacy-content">
+              <h3>Real-Time Processing Only</h3>
+              <p>Your audio is sent directly to Deepgram's secure API and processed immediately. No recordings are saved anywhere.</p>
+            </div>
+          </div>
+          
+          <div class="privacy-point">
+            <div class="privacy-icon">✅</div>
+            <div class="privacy-content">
+              <h3>No Personal Data Collection</h3>
+              <p>We don't collect, store, or analyze your personal information, voice patterns, or conversation content.</p>
+            </div>
+          </div>
+          
+          <div class="privacy-point">
+            <div class="privacy-icon">✅</div>
+            <div class="privacy-content">
+              <h3>Local Storage Only</h3>
+              <p>Your preferences and settings are stored locally on your device. Nothing is sent to our servers.</p>
+            </div>
+          </div>
+          
+          <div class="privacy-point">
+            <div class="privacy-icon">✅</div>
+            <div class="privacy-content">
+              <h3>Enterprise-Grade Security</h3>
+              <p>Powered by Deepgram's SOC 2 Type II certified infrastructure with end-to-end encryption.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="onboarding-actions">
+          <button class="primary-button" id="privacy-continue-btn">
+            I Understand
+          </button>
+          
+          <button class="secondary-button" id="privacy-back-btn">
+            Back
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: Permission Requests -->
+    <section class="onboarding-step hidden" id="step-permissions" data-step="3">
+      <div class="onboarding-content">
+        <div class="onboarding-icon">
+          🎤
+        </div>
+        
+        <h2 class="onboarding-title">Grant Required Permissions</h2>
+        
+        <p class="onboarding-description">
+          To provide live transcription, we need access to a few browser features. Click each permission to grant access:
+        </p>
+        
+        <div class="permissions-list">
+          <div class="permission-item" id="microphone-permission">
+            <div class="permission-icon">🎙️</div>
+            <div class="permission-content">
+              <h3>Microphone Access</h3>
+              <p>Required to capture your voice for transcription</p>
+              <div class="permission-status" data-status="pending">
+                <span class="status-text">Click to Grant</span>
+              </div>
+            </div>
+            <button class="permission-button" data-permission="microphone">
+              Grant Access
+            </button>
+          </div>
+          
+          <div class="permission-item" id="notifications-permission">
+            <div class="permission-icon">🔔</div>
+            <div class="permission-content">
+              <h3>Notifications (Optional)</h3>
+              <p>Show helpful alerts and status updates</p>
+              <div class="permission-status" data-status="pending">
+                <span class="status-text">Click to Grant</span>
+              </div>
+            </div>
+            <button class="permission-button" data-permission="notifications">
+              Grant Access
+            </button>
+          </div>
+          
+          <div class="permission-item auto-granted" id="storage-permission">
+            <div class="permission-icon">💾</div>
+            <div class="permission-content">
+              <h3>Local Storage</h3>
+              <p>Save your preferences and settings</p>
+              <div class="permission-status" data-status="granted">
+                <span class="status-text">✅ Granted</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="permissions-note">
+          <strong>Note:</strong> You can change these permissions anytime in your browser settings or the extension options page.
+        </div>
+        
+        <div class="onboarding-actions">
+          <button class="primary-button" id="permissions-continue-btn" disabled>
+            Continue Setup
+          </button>
+          
+          <button class="secondary-button" id="permissions-back-btn">
+            Back
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 4: Basic Preferences -->
+    <section class="onboarding-step hidden" id="step-preferences" data-step="4">
+      <div class="onboarding-content">
+        <div class="onboarding-icon">
+          ⚙️
+        </div>
+        
+        <h2 class="onboarding-title">Customize Your Experience</h2>
+        
+        <p class="onboarding-description">
+          Set up your basic preferences now, or skip this step and configure later in settings.
+        </p>
+        
+        <div class="preferences-form">
+          <div class="preference-group">
+            <label for="onboarding-language" class="preference-label">
+              Primary Language
+            </label>
+            <select id="onboarding-language" class="preference-control">
+              <option value="en-US">English (US)</option>
+              <option value="en-GB">English (UK)</option>
+              <option value="es-ES">Spanish</option>
+              <option value="fr-FR">French</option>
+              <option value="de-DE">German</option>
+              <option value="it-IT">Italian</option>
+              <option value="pt-BR">Portuguese</option>
+              <option value="ja-JP">Japanese</option>
+            </select>
+            <small class="preference-hint">
+              Choose the language you'll use most often
+            </small>
+          </div>
+          
+          <div class="preference-group">
+            <label for="onboarding-model" class="preference-label">
+              Transcription Quality
+            </label>
+            <select id="onboarding-model" class="preference-control">
+              <option value="nova-2">High Quality (Recommended)</option>
+              <option value="nova">Standard Quality</option>
+              <option value="base">Fast (Lower Accuracy)</option>
+            </select>
+            <small class="preference-hint">
+              Higher quality may have slightly more latency
+            </small>
+          </div>
+          
+          <div class="preference-group">
+            <div class="preference-toggles">
+              <label class="preference-toggle">
+                <input type="checkbox" id="onboarding-notifications" checked />
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">Show popup notifications</span>
+              </label>
+              
+              <label class="preference-toggle">
+                <input type="checkbox" id="onboarding-sounds" checked />
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">Play audio feedback</span>
+              </label>
+              
+              <label class="preference-toggle">
+                <input type="checkbox" id="onboarding-interim" checked />
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">Show live preview (interim results)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="onboarding-actions">
+          <button class="primary-button" id="preferences-continue-btn">
+            Complete Setup
+          </button>
+          
+          <button class="text-button" id="preferences-skip-btn">
+            Skip & Use Defaults
+          </button>
+          
+          <button class="secondary-button" id="preferences-back-btn">
+            Back
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 5: Completion & Next Steps -->
+    <section class="onboarding-step hidden" id="step-complete" data-step="5">
+      <div class="onboarding-content">
+        <div class="onboarding-icon">
+          🎉
+        </div>
+        
+        <h2 class="onboarding-title">You're All Set!</h2>
+        
+        <p class="onboarding-description">
+          Your Live Transcription extension is ready to use. Here's what you can do next:
+        </p>
+        
+        <div class="next-steps">
+          <div class="next-step-item">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Test Your Setup</h3>
+              <p>Click the extension icon and try the "Start Recording" button to test your microphone and transcription.</p>
+            </div>
+          </div>
+          
+          <div class="next-step-item">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Use in Meetings</h3>
+              <p>Open Google Meet, Zoom, or Teams and the extension will automatically offer transcription options.</p>
+            </div>
+          </div>
+          
+          <div class="next-step-item">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>Customize Further</h3>
+              <p>Visit the settings page anytime to adjust language, quality, and notification preferences.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="completion-actions">
+          <button class="primary-button" id="complete-start-btn">
+            Start Transcribing
+          </button>
+          
+          <button class="secondary-button" id="complete-settings-btn">
+            Open Settings
+          </button>
+          
+          <button class="text-button" id="complete-help-btn">
+            View Help & Support
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Progress Indicator -->
+    <div class="onboarding-progress">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text">
+        <span id="current-step">1</span> of <span id="total-steps">5</span>
+      </div>
+    </div>
+
+    <!-- Help & Support Links -->
+    <div class="onboarding-footer">
+      <div class="footer-links">
+        <a href="#" id="privacy-policy-link">Privacy Policy</a>
+        <a href="#" id="support-link">Support</a>
+        <a href="#" id="feedback-link">Send Feedback</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Load onboarding controller -->
+  <script type="module" src="scripts/onboarding.js"></script>
+</body>
+</html>
