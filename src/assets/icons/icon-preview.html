@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Transcription Extension - Icon Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+        }
+
+        .preview-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f7fafc;
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .icon-item {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .icon-item h3 {
+            margin: 0 0 15px 0;
+            color: #4a5568;
+            font-size: 1em;
+        }
+
+        .icon-display {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px;
+        }
+
+        .icon-info {
+            font-size: 0.85em;
+            color: #718096;
+        }
+
+        .theme-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .theme-btn {
+            padding: 8px 16px;
+            border: 2px solid #007acc;
+            background: transparent;
+            color: #007acc;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .theme-btn.active {
+            background: #007acc;
+            color: white;
+        }
+
+        .theme-btn:hover {
+            background: #007acc;
+            color: white;
+        }
+
+        .dark-theme {
+            background: #2d3748;
+            color: white;
+        }
+
+        .dark-theme .preview-section {
+            background: #4a5568;
+            border-color: #718096;
+        }
+
+        .dark-theme .icon-item {
+            background: #2d3748;
+            color: white;
+        }
+
+        .usage-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .usage-item {
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .dark-theme .usage-item {
+            background: #2d3748;
+            border-color: #718096;
+        }
+
+        .toolbar-sim {
+            background: #f0f0f0;
+            padding: 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .dark-theme .toolbar-sim {
+            background: #4a5568;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .download-section {
+            text-align: center;
+            padding: 20px;
+            background: #e6fffa;
+            border-radius: 8px;
+            border: 1px solid #81e6d9;
+        }
+
+        .download-btn {
+            background: #007acc;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .download-btn:hover {
+            background: #005a9e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Live Transcription Extension Icons</h1>
+        <p class="subtitle">Professional icon design preview and testing</p>
+
+        <div class="theme-toggle">
+            <button class="theme-btn active" onclick="setTheme('light')">☀️ Light Theme</button>
+            <button class="theme-btn" onclick="setTheme('dark')">🌙 Dark Theme</button>
+        </div>
+
+        <!-- SVG Original -->
+        <div class="preview-section">
+            <h2 class="section-title">
+                📐 Original SVG Template
+            </h2>
+            <div class="icon-grid">
+                <div class="icon-item">
+                    <h3>Full Size SVG</h3>
+                    <div class="icon-display">
+                        <svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#007acc" />
+                                    <stop offset="50%" style="stop-color:#0099dd" />
+                                    <stop offset="100%" style="stop-color:#00a8cc" />
+                                </linearGradient>
+                                <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.2"/>
+                                </filter>
+                            </defs>
+                            <circle cx="64" cy="64" r="56" fill="url(#blueGradient)" filter="url(#dropShadow)" />
+                            <rect x="52" y="28" width="24" height="42" rx="12" fill="white" />
+                            <rect x="58" y="35" width="12" height="1.5" rx="0.75" fill="#007acc" opacity="0.3" />
+                            <rect x="58" y="39" width="12" height="1.5" rx="0.75" fill="#007acc" opacity="0.3" />
+                            <rect x="58" y="43" width="12" height="1.5" rx="0.75" fill="#007acc" opacity="0.3" />
+                            <rect x="58" y="47" width="12" height="1.5" rx="0.75" fill="#007acc" opacity="0.3" />
+                            <rect x="58" y="51" width="12" height="1.5" rx="0.75" fill="#007acc" opacity="0.3" />
+                            <rect x="58" y="55" width="12" height="1.5" rx="0.75" fill="#007acc" opacity="0.3" />
+                            <rect x="58" y="59" width="12" height="1.5" rx="0.75" fill="#007acc" opacity="0.3" />
+                            <rect x="61" y="70" width="6" height="18" fill="white" />
+                            <rect x="48" y="85" width="32" height="4" rx="2" fill="white" />
+                            <path d="M 35 45 Q 25 55 35 65" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" />
+                            <path d="M 30 40 Q 15 55 30 70" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                            <path d="M 25 35 Q 5 55 25 75" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" />
+                            <path d="M 93 45 Q 103 55 93 65" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" />
+                            <path d="M 98 40 Q 113 55 98 70" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                            <path d="M 103 35 Q 123 55 103 75" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" />
+                            <rect x="20" y="96" width="88" height="3" rx="1.5" fill="white" opacity="0.9" />
+                            <rect x="20" y="102" width="70" height="2.5" rx="1.25" fill="white" opacity="0.7" />
+                            <rect x="20" y="107" width="52" height="2" rx="1" fill="white" opacity="0.5" />
+                            <circle cx="100" cy="28" r="6" fill="#ff4444" />
+                            <circle cx="100" cy="28" r="3" fill="white" />
+                        </svg>
+                    </div>
+                    <div class="icon-info">128×128px - Vector format</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Required Sizes -->
+        <div class="preview-section">
+            <h2 class="section-title">
+                📏 Required Extension Sizes
+            </h2>
+            <div class="icon-grid">
+                <div class="icon-item">
+                    <h3>Toolbar Icon</h3>
+                    <div class="icon-display">
+                        <svg width="16" height="16" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="blueGradient16" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#007acc" />
+                                    <stop offset="100%" style="stop-color:#00a8cc" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="64" cy="64" r="56" fill="url(#blueGradient16)" />
+                            <rect x="52" y="28" width="24" height="42" rx="12" fill="white" />
+                            <rect x="61" y="70" width="6" height="18" fill="white" />
+                            <rect x="48" y="85" width="32" height="4" rx="2" fill="white" />
+                            <path d="M 35 45 Q 25 55 35 65" stroke="white" stroke-width="3" fill="none" />
+                            <path d="M 93 45 Q 103 55 93 65" stroke="white" stroke-width="3" fill="none" />
+                        </svg>
+                    </div>
+                    <div class="icon-info">16×16px - icon-16.png</div>
+                </div>
+
+                <div class="icon-item">
+                    <h3>Windows Taskbar</h3>
+                    <div class="icon-display">
+                        <svg width="32" height="32" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="blueGradient32" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#007acc" />
+                                    <stop offset="100%" style="stop-color:#00a8cc" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="64" cy="64" r="56" fill="url(#blueGradient32)" />
+                            <rect x="52" y="28" width="24" height="42" rx="12" fill="white" />
+                            <rect x="61" y="70" width="6" height="18" fill="white" />
+                            <rect x="48" y="85" width="32" height="4" rx="2" fill="white" />
+                            <path d="M 35 45 Q 25 55 35 65" stroke="white" stroke-width="3" fill="none" />
+                            <path d="M 93 45 Q 103 55 93 65" stroke="white" stroke-width="3" fill="none" />
+                        </svg>
+                    </div>
+                    <div class="icon-info">32×32px - icon-32.png</div>
+                </div>
+
+                <div class="icon-item">
+                    <h3>Extension Page</h3>
+                    <div class="icon-display">
+                        <svg width="48" height="48" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="blueGradient48" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#007acc" />
+                                    <stop offset="100%" style="stop-color:#00a8cc" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="64" cy="64" r="56" fill="url(#blueGradient48)" />
+                            <rect x="52" y="28" width="24" height="42" rx="12" fill="white" />
+                            <rect x="61" y="70" width="6" height="18" fill="white" />
+                            <rect x="48" y="85" width="32" height="4" rx="2" fill="white" />
+                            <path d="M 35 45 Q 25 55 35 65" stroke="white" stroke-width="3" fill="none" />
+                            <path d="M 93 45 Q 103 55 93 65" stroke="white" stroke-width="3" fill="none" />
+                            <rect x="20" y="96" width="88" height="3" rx="1.5" fill="white" opacity="0.9" />
+                        </svg>
+                    </div>
+                    <div class="icon-info">48×48px - icon-48.png</div>
+                </div>
+
+                <div class="icon-item">
+                    <h3>Store Listing</h3>
+                    <div class="icon-display">
+                        <svg width="64" height="64" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="blueGradient128" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#007acc" />
+                                    <stop offset="100%" style="stop-color:#00a8cc" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="64" cy="64" r="56" fill="url(#blueGradient128)" />
+                            <rect x="52" y="28" width="24" height="42" rx="12" fill="white" />
+                            <rect x="61" y="70" width="6" height="18" fill="white" />
+                            <rect x="48" y="85" width="32" height="4" rx="2" fill="white" />
+                            <path d="M 35 45 Q 25 55 35 65" stroke="white" stroke-width="3" fill="none" />
+                            <path d="M 93 45 Q 103 55 93 65" stroke="white" stroke-width="3" fill="none" />
+                            <rect x="20" y="96" width="88" height="3" rx="1.5" fill="white" opacity="0.9" />
+                            <rect x="20" y="102" width="70" height="2.5" rx="1.25" fill="white" opacity="0.7" />
+                        </svg>
+                    </div>
+                    <div class="icon-info">128×128px - icon-128.png</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Examples -->
+        <div class="preview-section">
+            <h2 class="section-title">
+                🖥️ Usage Examples
+            </h2>
+            <div class="usage-examples">
+                <div class="usage-item">
+                    <h3>Chrome Toolbar</h3>
+                    <div class="toolbar-sim">
+                        <svg width="16" height="16" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="toolbarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#007acc" />
+                                    <stop offset="100%" style="stop-color:#00a8cc" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="64" cy="64" r="56" fill="url(#toolbarGrad)" />
+                            <rect x="52" y="28" width="24" height="42" rx="12" fill="white" />
+                            <rect x="61" y="70" width="6" height="18" fill="white" />
+                            <rect x="48" y="85" width="32" height="4" rx="2" fill="white" />
+                        </svg>
+                        <span style="font-size: 12px;">Live Transcription</span>
+                    </div>
+                </div>
+
+                <div class="usage-item">
+                    <h3>Extension Management</h3>
+                    <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+                        <svg width="48" height="48" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="mgmtGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#007acc" />
+                                    <stop offset="100%" style="stop-color:#00a8cc" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="64" cy="64" r="56" fill="url(#mgmtGrad)" />
+                            <rect x="52" y="28" width="24" height="42" rx="12" fill="white" />
+                            <rect x="61" y="70" width="6" height="18" fill="white" />
+                            <rect x="48" y="85" width="32" height="4" rx="2" fill="white" />
+                            <rect x="20" y="96" width="88" height="3" rx="1.5" fill="white" opacity="0.9" />
+                        </svg>
+                        <div>
+                            <div style="font-weight: 600;">Live Transcription Extension</div>
+                            <div style="font-size: 0.9em; color: #666;">Real-time audio transcription for meetings</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generation Instructions -->
+        <div class="preview-section">
+            <h2 class="section-title">
+                ⚡ Quick Generation
+            </h2>
+            <p>Generate PNG files from the SVG template:</p>
+
+            <div class="code-block">
+# If you have ImageMagick installed:
+./tools/generate-icons.sh
+
+# Or manually:
+magick src/assets/icons/live-transcription-icon.svg -resize 128x128 src/assets/icons/icon-128.png
+magick src/assets/icons/live-transcription-icon.svg -resize 48x48 src/assets/icons/icon-48.png
+magick src/assets/icons/live-transcription-icon.svg -resize 32x32 src/assets/icons/icon-32.png
+magick src/assets/icons/live-transcription-icon.svg -resize 16x16 src/assets/icons/icon-16.png</div>
+
+            <div class="download-section">
+                <h3>📥 Alternative Methods</h3>
+                <p>Don't have ImageMagick? Use these online converters:</p>
+                <a href="https://svgtopng.com" target="_blank" class="download-btn">SVG to PNG Online</a>
+                <a href="https://cloudconvert.com" target="_blank" class="download-btn">CloudConvert</a>
+                <a href="https://convertio.co" target="_blank" class="download-btn">Convertio</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setTheme(theme) {
+            const body = document.body;
+            const buttons = document.querySelectorAll('.theme-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (theme === 'dark') {
+                body.classList.add('dark-theme');
+                buttons[1].classList.add('active');
+            } else {
+                body.classList.remove('dark-theme');
+                buttons[0].classList.add('active');
+            }
+        }
+
+        // Initialize with light theme
+        setTheme('light');
+    </script>
+</body>
+</html>
