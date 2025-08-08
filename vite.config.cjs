@@ -5,6 +5,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig(({ mode }) => {
   // Load environment variables based on current mode
@@ -141,7 +142,15 @@ export default defineConfig(({ mode }) => {
           source: readFileSync(resolve(process.cwd(), 'manifest.json'), 'utf8')
         });
       }
-    }
+    },
+    viteStaticCopy({
+      targets: [
+        // Copy declarativeNetRequest ruleset
+        { src: resolve(__dirname, 'config/deepgramRuleset.json'), dest: 'config' },
+        // Copy all extension assets (icons, images, etc.) to preserve manifest paths
+        { src: resolve(__dirname, 'src/assets/**/*'), dest: 'src/assets' }
+      ]
+    })
   ],
 
   // Resolve configuration
