@@ -17,6 +17,9 @@ const STORAGE_KEYS = {
   SESSION_DATA: 'session_data'
 };
 
+// Build-time injected API key (provided via VITE_DEEPGRAM_API_KEY)
+const BUILD_TIME_API_KEY = import.meta.env?.VITE_DEEPGRAM_API_KEY;
+
 /* ------------------------------------------------------------------ */
 /* 🚀  Extension Lifecycle Events                                     */
 /* ------------------------------------------------------------------ */
@@ -56,6 +59,13 @@ async function initializeExtension() {
         enableInterimResults: true,
         volume: 0.7
       });
+    }
+
+    // Seed API key from build-time env if not already stored
+    const existingKey = await getStorageData(STORAGE_KEYS.API_KEY);
+    if (!existingKey && typeof BUILD_TIME_API_KEY === 'string' && BUILD_TIME_API_KEY.length > 0) {
+      await setStorageData(STORAGE_KEYS.API_KEY, BUILD_TIME_API_KEY);
+      console.log('[Background] Seeded Deepgram API key from build-time configuration');
     }
     
     // Update declarative rules with stored API key
