@@ -10,7 +10,7 @@
     "npm": ">=8.0.0"
   },
   "scripts": {
-    "build": "vite build && cp -r src/content build/chrome/src/ && cp -r src/styles build/chrome/src/",
+    "build": "vite build",
     "build:chrome": "vite build --outDir=build/chrome",
     "build:firefox": "vite build --outDir=build/firefox",
     "build:edge": "vite build --outDir=build/edge",
